@@ -1,0 +1,8 @@
+# Chaque zone a un relecteur obligatoire pour les Pull Requests.
+# Remplacez les @identifiants par les vrais pseudos GitHub de l'équipe.
+*                       @CHEF_DE_PROJET
+/apps/donneur/          @HANAA @JOHANNE
+/apps/plateforme/       @SOLANGE
+/backend/               @ZOZERIGUE
+/supabase/              @ZOZERIGUE
+/packages/contrat-api/  @ZOZERIGUE @SOLANGE @HANAA @JOHANNE

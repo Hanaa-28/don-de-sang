@@ -1,0 +1,14 @@
+{
+  "name": "don-de-sang",
+  "private": true,
+  "description": "Plateforme numérique de don de sang et de traçabilité des poches (2iE, Give Back Mastercard Foundation)",
+  "workspaces": ["apps/*", "backend", "packages/*"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev:donneur": "npm run dev -w @dds/donneur",
+    "dev:plateforme": "npm run dev -w @dds/plateforme",
+    "dev:backend": "npm run dev -w @dds/backend",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

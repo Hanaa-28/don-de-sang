@@ -1,0 +1,25 @@
+name: Tâche
+description: Une tâche du calendrier (écran, route, table…)
+labels: ["tâche"]
+body:
+  - type: dropdown
+    id: semaine
+    attributes:
+      label: Semaine prévue
+      options: [S1, S2, S3, S4, S5, S6, S7, S8, S9]
+    validations:
+      required: true
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone
+      options: [Application donneurs, Espace agent, Espace administrateur, Backend, Base de données, Toute l'équipe]
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description et critère de fin
+      placeholder: "Ce qui doit marcher pour considérer la tâche terminée."
+    validations:
+      required: true

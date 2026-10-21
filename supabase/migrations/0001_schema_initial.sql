@@ -1,0 +1,9 @@
+-- Schéma initial : les 28 tables du cahier des charges (jalon J2, 1er novembre).
+-- À écrire par Zozerigué en semaine 2. Une migration = un fichier numéroté, jamais modifié après fusion.
+-- Exemple de convention :
+-- create table sites (
+--   id uuid primary key default gen_random_uuid(),
+--   nom text not null,
+--   type text not null check (type in ('centre', 'depot')),
+--   cree_le timestamptz not null default now()
+-- );

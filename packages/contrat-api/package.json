@@ -1,0 +1,18 @@
+{
+  "name": "@dds/contrat-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Contrat d'API partagé : types TypeScript et exemples JSON des routes",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./exemples/*": "./exemples/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

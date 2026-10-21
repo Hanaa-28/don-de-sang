@@ -1,0 +1,37 @@
+name: Bug
+description: Signaler un problème (utilisé surtout en semaine 8)
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: gravite
+    attributes:
+      label: Gravité
+      options:
+        - Bloquant (le scénario complet ne passe pas)
+        - Majeur (fonction cassée, contournement possible)
+        - Mineur (affichage, texte, confort)
+    validations:
+      required: true
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone
+      options: [Application donneurs, Espace agent, Espace administrateur, Backend, Base de données]
+    validations:
+      required: true
+  - type: textarea
+    id: etapes
+    attributes:
+      label: Étapes pour reproduire
+      placeholder: "1. Aller sur…\n2. Cliquer sur…\n3. Voir l'erreur"
+    validations:
+      required: true
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Résultat attendu / obtenu
+  - type: input
+    id: appareil
+    attributes:
+      label: Appareil et navigateur
+      placeholder: "ex. Android 14, Chrome"

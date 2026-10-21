@@ -1,0 +1,3 @@
+/* Styles de base provisoires : le vrai design viendra des maquettes (S1-S2). */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; }

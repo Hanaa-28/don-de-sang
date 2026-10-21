@@ -1,0 +1,4 @@
+{ "donnees": [
+  { "id": "a_014", "groupeSanguin": "O+", "centre": { "id": "c_01", "nom": "CNTS Ouagadougou", "adresse": "Avenue de l'Hôpital" }, "message": "Besoin urgent de sang O+ aujourd'hui.", "statut": "ouverte", "creeLe": "2026-11-10T08:30:00Z", "maReponse": null },
+  { "id": "a_009", "groupeSanguin": "O+", "centre": { "id": "c_01", "nom": "CNTS Ouagadougou", "adresse": "Avenue de l'Hôpital" }, "message": "Stock bas en O+.", "statut": "cloturee", "creeLe": "2026-10-28T09:00:00Z", "maReponse": "je_viens" }
+] }

@@ -1,0 +1,10 @@
+{
+  "name": "Don de sang",
+  "short_name": "Don de sang",
+  "start_url": "/",
+  "display": "standalone",
+  "lang": "fr",
+  "background_color": "#ffffff",
+  "theme_color": "#b3122e",
+  "icons": []
+}
