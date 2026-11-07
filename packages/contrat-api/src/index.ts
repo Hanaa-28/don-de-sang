@@ -344,3 +344,44 @@ export interface AgentConnexionReponse {
   jeton: string;
   utilisateur: AgentConnecte;
 }
+
+// =====================================================================
+// Plateforme du CNTS — accueil (P3) : retrouver, inscrire sur place,
+// réinitialiser le mot de passe d'un donneur.
+// =====================================================================
+
+/** GET /donneurs?telephone=… — le donneur tel que le voit l'agent d'accueil. */
+export interface DonneurAgent {
+  id: string;
+  numeroDonneur: string;
+  nom: string;
+  prenom: string;
+  sexe: Sexe;
+  dateNaissance: string;
+  telephone: string;
+  telephoneVerifie: boolean;
+  groupeSanguin: GroupeSanguin | null;
+  zone: Zone | null;
+  canaux: Canal[];
+  enPause: boolean;
+  actif: boolean;
+  origine: "application" | "sur_place";
+  creeLe: string;
+}
+
+/** POST /donneurs — inscrire un donneur sur place (sans l'application). */
+export interface InscriptionSurPlaceRequete {
+  nom: string;
+  prenom: string;
+  sexe: Sexe;
+  dateNaissance: string;          // AAAA-MM-JJ
+  telephone: string;              // +226XXXXXXXX
+  zoneId?: string | null;
+  groupeSanguin?: GroupeSanguin | null;
+  canaux?: Canal[];
+}
+
+/** POST /donneurs/:id/reinitialisation — réponse : mot de passe temporaire en clair. */
+export interface ReinitialisationMotDePasseReponse {
+  motDePasseTemporaire: string;
+}
