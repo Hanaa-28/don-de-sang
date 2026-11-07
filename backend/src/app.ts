@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { config } from "./config.js";
 import { routeSante } from "./routes/sante.js";
 import { routeAuth } from "./routes/auth.js";
+import { routeAdmin } from "./routes/admin.js";
 import { routeReferentiels } from "./routes/referentiels.js";
 import { routeDonneurs } from "./routes/donneurs.js";
 import { routeAlertes } from "./routes/alertes.js";
@@ -72,6 +73,9 @@ app.use(`${base}/codes`, authentifier, exigerRole("agent_accueil", "agent_prelev
 app.use(`${base}/stock`, authentifier, exigerRole("agent_stock", "agent_depot", "admin"), routeStock);
 app.use(`${base}/produits`, authentifier, exigerRole("agent_stock", "agent_depot", "admin"), routeProduits);
 app.use(`${base}`, routeDistribution);
+
+// Espace CNTS (administration) — comptes/rôles, zones, centres, règles, stats.
+app.use(`${base}`, routeAdmin);
 
 // À venir : (rien — toutes les routes du prototype sont montées)
 

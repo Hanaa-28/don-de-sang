@@ -28,6 +28,7 @@ export type ReponseErreur = {
 export type CodeErreur =
   | "IDENTIFIANTS_INVALIDES"
   | "TELEPHONE_DEJA_INSCRIT"
+  | "EMAIL_DEJA_UTILISE"
   | "TELEPHONE_NON_VERIFIE"
   | "CODE_INCORRECT"
   | "CODE_EXPIRE"
@@ -576,4 +577,71 @@ export interface Expedition {
 export interface DelivranceRequete {
   code: string;
   service: string;
+}
+
+// =====================================================================
+// Espace CNTS (administration) — P1 (comptes et rôles), P2 (zones et
+// centres), règles de don (Annexe E) et tableau de bord.
+// =====================================================================
+
+/** Compte agent ou administrateur, tel que le CNTS le voit (GET /agents). */
+export interface AgentCompte {
+  id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  roles: Role[];
+  siteId: string;
+  siteNom: string;
+  actif: boolean;
+  creeLe: string;
+}
+
+/** POST /agents — créer un compte agent (avec ses rôles). */
+export interface CreerAgentRequete {
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  motDePasse: string;      // 8 caractères au moins
+  siteId: string;
+  roles: Role[];           // au moins un, rôles plateforme uniquement
+}
+
+/** POST /zones — ajouter une zone. */
+export interface CreerZoneRequete { nom: string; ville: string; }
+
+/** POST /centres — ajouter un site (centre, dépôt ou hôpital). */
+export interface CreerCentreRequete {
+  code: string;            // 3 lettres majuscules
+  nom: string;
+  type: "centre" | "depot" | "hopital";
+  adresse?: string;
+  zoneId?: string | null;
+  telephone?: string;
+  horaires?: string;
+}
+
+/** Une règle réglable (Annexe E), lue et modifiée par le CNTS. */
+export interface Regle {
+  cle: string;
+  valeur: string;
+  description: string;
+}
+
+/** PUT /regles/:cle — changer la valeur d'une règle. */
+export interface ModifierRegleRequete { valeur: string; }
+
+/** GET /statistiques — tableau de bord temps réel du CNTS. */
+export interface Statistiques {
+  donneurs: { total: number; actifs: number; enPause: number };
+  donsAujourdhui: number;
+  pochesEnAnalyse: number;
+  produitsDisponibles: number;
+  alertesEnCours: number;
+  demandesEnAttente: number;
+  zones: number;
+  sites: number;
+  agents: number;
 }
