@@ -3,10 +3,12 @@
  * parle au backend. Les types viennent de @dds/contrat-api.
  */
 import type {
-  Analyse, AgentConnexionReponse, CreerPocheRequete, DonneurAgent,
-  EnregistrerAnalyseRequete, EnregistrerPassageRequete, FicheTracabilite,
-  InscriptionSurPlaceRequete, Passage, Poche, PreparerPocheRequete,
-  Produit, ReinitialisationMotDePasseReponse, Reponse, ReponseErreur,
+  Analyse, AgentConnexionReponse, CreerPocheRequete, DelivranceRequete, Demande,
+  DemandeRequete, DonneurAgent, EnregistrerAnalyseRequete, EnregistrerPassageRequete,
+  EstimationAlerteReponse, Expedition, ExpeditionRequete, FicheTracabilite,
+  InscriptionSurPlaceRequete, LancerAlerteRequete, LigneStock, Passage, Poche,
+  PreparerPocheRequete, Produit, ReinitialisationMotDePasseReponse, Reponse,
+  ReponseErreur, SuiviAlerte,
 } from "@dds/contrat-api";
 import { lireJeton } from "./session";
 
@@ -81,4 +83,24 @@ export const api = {
 
   reinitialiser: (id: string) =>
     appel<ReinitialisationMotDePasseReponse>("POST", `/donneurs/${encodeURIComponent(id)}/reinitialisation`),
+
+  // P6 Stock
+  stock: () => appel<LigneStock[]>("GET", "/stock"),
+  zones: () => appel<{ id: string; nom: string; ville: string }[]>("GET", "/zones"),
+  produitsPeremption: () => appel<Produit[]>("GET", "/produits?peremption=proche"),
+  detruireProduit: (code: string) => appel<null>("POST", `/produits/${encodeURIComponent(code)}/destruction`, {}),
+
+  // P7 Alertes (gestionnaire)
+  estimationAlerte: (zoneIds: string[]) =>
+    appel<EstimationAlerteReponse>("POST", "/alertes/estimation", { zoneIds }),
+  lancerAlerte: (corps: LancerAlerteRequete) => appel<SuiviAlerte>("POST", "/alertes", corps),
+  suiviAlerte: (id: string) => appel<SuiviAlerte>("GET", `/alertes/${encodeURIComponent(id)}`),
+  cloturerAlerte: (id: string) => appel<SuiviAlerte>("POST", `/alertes/${encodeURIComponent(id)}/cloture`),
+
+  // P8/P10 Distribution
+  demandes: () => appel<Demande[]>("GET", "/demandes"),
+  creerDemande: (corps: DemandeRequete) => appel<Demande>("POST", "/demandes", corps),
+  creerExpedition: (corps: ExpeditionRequete) => appel<Expedition>("POST", "/expeditions", corps),
+  recevoirExpedition: (id: string) => appel<Expedition>("POST", `/expeditions/${encodeURIComponent(id)}/reception`),
+  delivrer: (corps: DelivranceRequete) => appel<{ code: string; service: string; statut: string }>("POST", "/delivrances", corps),
 };

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
-  AgentConnecte, DonneurAgent, FicheTracabilite, Passage, Poche,
+  AgentConnecte, Demande, DonneurAgent, FicheTracabilite, LigneStock, Passage, Poche, SuiviAlerte,
 } from "@dds/contrat-api";
 import { api, messageDe } from "@/lib/api";
 import { fermerSession, lireAgent, lireJeton } from "@/lib/session";
@@ -36,6 +36,7 @@ export default function Agent() {
 
   const peutAccueillir = agent.roles.some((r) => ["agent_accueil", "agent_prelevement", "admin"].includes(r));
   const peutLabo = agent.roles.some((r) => ["agent_labo", "admin"].includes(r));
+  const peutStock = agent.roles.some((r) => ["agent_stock", "agent_depot", "admin"].includes(r));
 
   return (
     <main className="page">
@@ -52,11 +53,17 @@ export default function Agent() {
       <nav className="onglets">
         {peutAccueillir && <Onglet actif={onglet === "accueil"} onClick={() => setOnglet("accueil")}>Accueil / prélèvement</Onglet>}
         {peutLabo && <Onglet actif={onglet === "labo"} onClick={() => setOnglet("labo")}>Laboratoire</Onglet>}
+        {peutStock && <Onglet actif={onglet === "stock"} onClick={() => setOnglet("stock")}>Stock</Onglet>}
+        {peutStock && <Onglet actif={onglet === "alertes"} onClick={() => setOnglet("alertes")}>Alertes</Onglet>}
+        {peutStock && <Onglet actif={onglet === "distribution"} onClick={() => setOnglet("distribution")}>Distribution</Onglet>}
         <Onglet actif={onglet === "trace"} onClick={() => setOnglet("trace")}>Traçabilité</Onglet>
       </nav>
 
       {onglet === "accueil" && <Accueil />}
       {onglet === "labo" && <Laboratoire />}
+      {onglet === "stock" && <Stock />}
+      {onglet === "alertes" && <Alertes />}
+      {onglet === "distribution" && <Distribution />}
       {onglet === "trace" && <Tracabilite />}
     </main>
   );
@@ -307,6 +314,192 @@ function Tracabilite() {
           ))}
         </div>
       )}
+    </section>
+  );
+}
+
+/* =====================================================================
+   P6 — Stock
+   ===================================================================== */
+function niveauPilule(niveau: string) {
+  return niveau === "critique" ? "pilule--sang" : niveau === "bas" ? "pilule--ocre" : "pilule--seve";
+}
+
+function Stock() {
+  const [lignes, setLignes] = useState<LigneStock[]>([]);
+  const [erreur, setErreur] = useState("");
+  useEffect(() => { (async () => { try { setLignes(await api.stock()); } catch (p) { setErreur(messageDe(p)); } })(); }, []);
+
+  return (
+    <section className="pile">
+      <h2 className="section-titre">Stock disponible (calculé)</h2>
+      {erreur && <p className="message message--erreur">{erreur}</p>}
+      {lignes.length === 0 ? (
+        <div className="bloc"><p className="appui">Aucun produit en stock pour votre site.</p></div>
+      ) : (
+        <div className="bloc pile">
+          {lignes.map((l, i) => (
+            <div key={i} className="ligne">
+              <span className="fort">{l.typeProduit}</span>
+              <span className="chiffres">{l.groupeSanguin}</span>
+              <span className="ligne__corps" style={{ textAlign: "right" }}><span className="fort">{l.quantite}</span></span>
+              <span className={`pilule ${niveauPilule(l.niveau)}`}>{l.niveau}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* =====================================================================
+   P7 — Alertes aux donneurs
+   ===================================================================== */
+function Alertes() {
+  const [zones, setZones] = useState<{ id: string; nom: string }[]>([]);
+  const [groupe, setGroupe] = useState("O+");
+  const [urgence, setUrgence] = useState("normale");
+  const [objectif, setObjectif] = useState(5);
+  const [dateLimite, setDateLimite] = useState("");
+  const [message, setMessage] = useState("");
+  const [zoneIds, setZoneIds] = useState<string[]>([]);
+  const [estimation, setEstimation] = useState<number | null>(null);
+  const [erreur, setErreur] = useState("");
+  const [reussite, setReussite] = useState("");
+
+  useEffect(() => { (async () => { setZones(await api.zones()); })(); }, []);
+
+  async function estimer() {
+    setErreur(""); setEstimation(null);
+    if (zoneIds.length === 0) return setErreur("Choisissez au moins une zone.");
+    try { setEstimation((await api.estimationAlerte(zoneIds)).donneursCibles); } catch (p) { setErreur(messageDe(p)); }
+  }
+
+  async function lancer() {
+    setErreur(""); setReussite("");
+    try {
+      const a = await api.lancerAlerte({
+        groupeSanguin: groupe as never, urgence: urgence as never, objectifDonneurs: objectif,
+        dateLimite: new Date(dateLimite).toISOString(), message, zoneIds,
+      });
+      setReussite(`Alerte lancée (${a.id.slice(0, 8)}…). Les donneurs éligibles sont prévenus.`);
+      setEstimation(null);
+    } catch (p) { setErreur(messageDe(p)); }
+  }
+
+  function basculerZone(id: string) {
+    setZoneIds((z) => (z.includes(id) ? z.filter((x) => x !== id) : [...z, id]));
+  }
+
+  return (
+    <section className="pile">
+      <h2 className="section-titre">Lancer une alerte aux donneurs</h2>
+      {erreur && <p className="message message--erreur">{erreur}</p>}
+      {reussite && <p className="message message--reussite">{reussite}</p>}
+
+      <div className="bloc pile">
+        <div className="grille-2">
+          <label className="champ">
+            <span className="champ__etiquette">Groupe recherché</span>
+            <select className="champ__saisie" value={groupe} onChange={(e) => setGroupe(e.target.value)}>
+              {["O+", "A+", "B+", "AB+", "O-", "A-", "B-", "AB-"].map((g) => <option key={g}>{g}</option>)}
+            </select>
+          </label>
+          <label className="champ">
+            <span className="champ__etiquette">Urgence</span>
+            <select className="champ__saisie" value={urgence} onChange={(e) => setUrgence(e.target.value)}>
+              <option value="normale">Normale</option>
+              <option value="urgente">Urgente</option>
+              <option value="critique">Critique</option>
+            </select>
+          </label>
+        </div>
+        <div className="grille-2">
+          <label className="champ">
+            <span className="champ__etiquette">Objectif (donneurs)</span>
+            <input className="champ__saisie chiffres" type="number" min={1} value={objectif} onChange={(e) => setObjectif(Number(e.target.value))} />
+          </label>
+          <label className="champ">
+            <span className="champ__etiquette">Date limite</span>
+            <input className="champ__saisie" type="datetime-local" value={dateLimite} onChange={(e) => setDateLimite(e.target.value)} />
+          </label>
+        </div>
+        <label className="champ">
+          <span className="champ__etiquette">Message</span>
+          <input className="champ__saisie" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Le stock O+ est bas…" />
+        </label>
+        <div className="pile-s">
+          <span className="champ__etiquette">Zones ciblées</span>
+          <div className="onglets">
+            {zones.map((z) => (
+              <button key={z.id} type="button" className={`onglet${zoneIds.includes(z.id) ? " onglet--actif" : ""}`} onClick={() => basculerZone(z.id)}>
+                {z.nom}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="rang">
+          <button className="bouton bouton--secondaire" onClick={estimer}>Estimer</button>
+          {estimation !== null && <span className="appui"><span className="fort">{estimation}</span> donneur(s) seront prévenus.</span>}
+          <button className="bouton bouton--principal" disabled={!dateLimite || !message || zoneIds.length === 0} onClick={lancer}>Lancer l'alerte</button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+   P8 / P10 — Distribution
+   ===================================================================== */
+function Distribution() {
+  const [demandes, setDemandes] = useState<Demande[]>([]);
+  const [code, setCode] = useState("");
+  const [service, setService] = useState("");
+  const [erreur, setErreur] = useState("");
+  const [reussite, setReussite] = useState("");
+
+  useEffect(() => { (async () => { try { setDemandes(await api.demandes()); } catch (p) { setErreur(messageDe(p)); } })(); }, []);
+
+  async function delivrer() {
+    setErreur(""); setReussite("");
+    try {
+      const r = await api.delivrer({ code, service });
+      setReussite(`Produit ${r.code} délivré au service ${r.service}.`);
+      setCode(""); setService("");
+    } catch (p) { setErreur(messageDe(p)); }
+  }
+
+  return (
+    <section className="pile">
+      <h2 className="section-titre">Demandes des dépôts</h2>
+      {erreur && <p className="message message--erreur">{erreur}</p>}
+      {reussite && <p className="message message--reussite">{reussite}</p>}
+      {demandes.length === 0 ? (
+        <div className="bloc"><p className="appui">Aucune demande.</p></div>
+      ) : (
+        demandes.map((d) => (
+          <div key={d.id} className="bloc pile-s">
+            <div className="rang-espace">
+              <span className="titre-s">{d.lignes.map((l) => `${l.typeProduit} ${l.groupeSanguin} ×${l.quantite}`).join(", ")}</span>
+              <span className="pilule pilule--neutre">{d.urgence}</span>
+            </div>
+            <span className="petit">{d.date} · statut : {d.statut}</span>
+          </div>
+        ))
+      )}
+
+      <h2 className="section-titre">Délivrer un produit à un service</h2>
+      <div className="bloc rang" style={{ flexWrap: "wrap" }}>
+        <label className="champ" style={{ flex: 1 }}>
+          <span className="champ__etiquette">Code du produit</span>
+          <input className="champ__saisie chiffres" value={code} onChange={(e) => setCode(e.target.value)} placeholder="OUA-26-04812-K-GR" />
+        </label>
+        <label className="champ" style={{ flex: 1 }}>
+          <span className="champ__etiquette">Service</span>
+          <input className="champ__saisie" value={service} onChange={(e) => setService(e.target.value)} placeholder="urgences, maternité…" />
+        </label>
+        <button className="bouton bouton--principal" disabled={!code || !service} onClick={delivrer}>Délivrer</button>
+      </div>
     </section>
   );
 }
