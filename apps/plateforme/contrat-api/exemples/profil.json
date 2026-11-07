@@ -1,0 +1,8 @@
+{ "donnees": {
+  "id": "d_001", "numeroDonneur": "DDS-2026-000123",
+  "nom": "Ouédraogo", "prenom": "Awa", "sexe": "F", "dateNaissance": "1998-03-14",
+  "telephone": "+22670000001", "groupeSanguin": "O+",
+  "zone": { "id": "z_05", "nom": "Kamsonghin", "ville": "Ouagadougou" },
+  "canaux": ["whatsapp", "appel"], "enPause": false, "finPause": null,
+  "creeLe": "2025-02-03T10:00:00Z"
+} }
