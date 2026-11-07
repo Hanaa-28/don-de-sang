@@ -15,19 +15,22 @@
    ===================================================================== */
 
 :root {
-  /* Couleurs */
-  --sang: #8C1C2C;          /* action principale, marque, urgence       */
-  --sang-fonce: #6E1522;
-  --sang-clair: #F3E7E9;
-  --encre: #241E1D;         /* texte                                    */
-  --encre-2: #6B5F5C;       /* texte secondaire                         */
-  --seve: #2E6A4F;          /* réussite, « vous pouvez donner »         */
-  --seve-clair: #E7F0EB;
-  --ocre: #9A6400;          /* attente, délai qui court                 */
-  --ocre-clair: #F7EFE0;
-  --trait: #E5DCD6;
-  --trait-fort: #C9BDB5;
-  --fond: #FBF7F4;
+  /* Couleurs — charte « Doctolib » : bleu en primaire, rouge réservé au sang */
+  --primaire: #0165FF;         /* bleu Doctolib : action principale, marque  */
+  --primaire-fonce: #0053C7;   /* survol                                      */
+  --primaire-clair: #EBF3FF;   /* teinte claire (fonds, sélections)          */
+  --sang: #D92D20;             /* rouge sang : goutte, urgence, erreur       */
+  --sang-fonce: #B42318;
+  --sang-clair: #FEE4E2;
+  --encre: #1B2733;            /* texte                                       */
+  --encre-2: #64748B;          /* texte secondaire                            */
+  --seve: #0B8A5D;             /* réussite, « vous pouvez donner »            */
+  --seve-clair: #E7F5EF;
+  --ocre: #B45309;             /* attente, délai qui court                    */
+  --ocre-clair: #FDF0E3;
+  --trait: #E6E8EB;
+  --trait-fort: #CBD5E1;
+  --fond: #F6F7F9;
   --surface: #FFFFFF;
 
   /* Espacement, base 4 */
@@ -47,6 +50,12 @@
   --hauteur-barre: 64px;
   --duree: 180ms;
   --courbe: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Formes et ombres (charte douce) */
+  --rayon: 12px;
+  --rayon-petit: 8px;
+  --ombre: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --ombre-forte: 0 6px 16px rgba(16, 24, 40, 0.08);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -65,8 +74,8 @@ h1, h2, h3, p, ul, ol { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--encre); outline-offset: 3px; }
-::selection { background: var(--sang); color: #fff; }
+:focus-visible { outline: 2px solid var(--primaire); outline-offset: 3px; }
+::selection { background: var(--primaire); color: #fff; }
 
 .chiffres { font-family: var(--police-chiffres); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
 .visuellement-cache {
@@ -129,7 +138,7 @@ button { font: inherit; color: inherit; }
   min-height: var(--hauteur-action);
   padding: 0 var(--e6);
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: var(--rayon-petit);
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -140,8 +149,8 @@ button { font: inherit; color: inherit; }
 .bouton:disabled { opacity: 0.4; cursor: not-allowed; }
 .bouton--large { width: 100%; }
 .bouton--compact { min-height: var(--cible); padding: 0 var(--e4); font-size: var(--t-appui); }
-.bouton--principal { background: var(--sang); color: #fff; }
-.bouton--principal:hover:not(:disabled) { background: var(--sang-fonce); }
+.bouton--principal { background: var(--primaire); color: #fff; box-shadow: var(--ombre); }
+.bouton--principal:hover:not(:disabled) { background: var(--primaire-fonce); }
 .bouton--secondaire { background: var(--surface); color: var(--encre); border-color: var(--trait-fort); }
 .bouton--secondaire:hover:not(:disabled) { border-color: var(--encre); }
 .bouton--danger { background: transparent; color: var(--sang); border-color: var(--sang); }
@@ -151,7 +160,7 @@ button { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; gap: var(--e2);
   min-height: var(--cible);
   padding: 0; border: 0; background: none;
-  color: var(--sang); font-weight: 600; text-decoration: none; cursor: pointer;
+  color: var(--primaire); font-weight: 600; text-decoration: none; cursor: pointer;
 }
 .lien:hover { text-decoration: underline; text-underline-offset: 3px; }
 .lien--discret { color: var(--encre-2); font-weight: 500; }
@@ -171,6 +180,7 @@ button { font: inherit; color: inherit; }
   padding: 0 var(--e3);
   background: var(--surface);
   border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon-petit);
   transition: border-color var(--duree);
 }
 .champ__groupe:focus-within { border-color: var(--encre); box-shadow: inset 0 0 0 1px var(--encre); }
@@ -201,6 +211,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
   display: inline-flex; align-items: center; justify-content: center; gap: var(--e2);
   min-height: var(--cible); padding: var(--e2) var(--e4);
   background: var(--surface); border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon-petit);
   font-size: var(--t-appui); font-weight: 500; text-align: center; cursor: pointer;
   transition: background var(--duree), border-color var(--duree), color var(--duree);
 }
@@ -213,14 +224,14 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .grille-groupes { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--e2); }
 .touche-groupe {
   height: 56px;
-  background: var(--surface); border: 1px solid var(--trait-fort);
+  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
   font-size: var(--t-lead); font-weight: 700; cursor: pointer;
 }
-.touche-groupe[aria-pressed="true"] { border: 2px solid var(--sang); color: var(--sang); background: var(--sang-clair); }
+.touche-groupe[aria-pressed="true"] { border: 2px solid var(--primaire); color: var(--primaire); background: var(--primaire-clair); }
 .touche-groupe:disabled { opacity: 0.35; cursor: not-allowed; }
 
 .case { display: flex; align-items: flex-start; gap: var(--e3); cursor: pointer; font-size: var(--t-appui); }
-.case input { width: 22px; height: 22px; margin: 1px 0 0; flex-shrink: 0; accent-color: var(--sang); }
+.case input { width: 22px; height: 22px; margin: 1px 0 0; flex-shrink: 0; accent-color: var(--primaire); }
 
 /* Code à six chiffres (D4, D7) */
 .code-cases { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--e2); }
@@ -228,7 +239,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
   height: 60px; width: 100%;
   text-align: center;
   font-family: var(--police-chiffres); font-size: var(--t-titre); font-weight: 600;
-  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: 0;
+  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
   color: var(--encre);
 }
 .code-case:focus { outline: none; border-color: var(--encre); box-shadow: inset 0 0 0 1px var(--encre); }
@@ -255,6 +266,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
   display: flex; align-items: flex-start; gap: var(--e3);
   padding: var(--e4);
   border-left: 3px solid var(--encre-2);
+  border-radius: var(--rayon);
   background: var(--surface);
   font-size: var(--t-appui);
 }
@@ -278,7 +290,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .etat-vide__icone {
   width: 64px; height: 64px;
   display: flex; align-items: center; justify-content: center;
-  background: var(--sang-clair); color: var(--sang); border-radius: 50%;
+  background: var(--primaire-clair); color: var(--primaire); border-radius: 50%;
 }
 
 /* Chargement */
@@ -336,9 +348,9 @@ select.champ__saisie { appearance: none; cursor: pointer; }
   height: var(--hauteur-barre);
   color: var(--encre-2); font-size: 11px; font-weight: 500; text-decoration: none;
 }
-.barre-nav a[aria-current="page"] { color: var(--sang); font-weight: 700; }
+.barre-nav a[aria-current="page"] { color: var(--primaire); font-weight: 700; }
 .barre-nav a[aria-current="page"]::before {
-  content: ""; position: absolute; top: 0; left: 25%; right: 25%; height: 3px; background: var(--sang);
+  content: ""; position: absolute; top: 0; left: 25%; right: 25%; height: 3px; background: var(--primaire);
 }
 .barre-nav__point {
   position: absolute; top: 10px; left: calc(50% + 8px);
@@ -348,7 +360,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 /* Indicateur d'étape (inscription) */
 .segments { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--e1); }
 .segments span { height: 4px; background: var(--trait); }
-.segments span.actif { background: var(--sang); }
+.segments span.actif { background: var(--primaire); }
 
 /* =====================================================================
    8. Listes
@@ -369,7 +381,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .ligne--non-lue .ligne__titre { font-weight: 700; }
 .ligne__point { width: 8px; height: 8px; border-radius: 50%; background: var(--sang); flex-shrink: 0; }
 
-.bloc { background: var(--surface); border: 1px solid var(--trait); padding: var(--e5); }
+.bloc { background: var(--surface); border: 1px solid var(--trait); border-radius: var(--rayon); padding: var(--e5); box-shadow: var(--ombre); }
 .bloc--attenue { opacity: 0.65; }
 .bloc--a-repondre { border-left: 4px solid var(--sang); }
 
@@ -379,7 +391,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .ouverture {
   min-height: 100dvh;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--e6);
-  background: var(--sang); color: #fff;
+  background: var(--primaire); color: #fff;
   padding: var(--e8) var(--e5);
   text-align: center;
   cursor: pointer;
@@ -400,7 +412,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
    ===================================================================== */
 .bienvenue { min-height: 100dvh; display: flex; flex-direction: column; }
 .bienvenue__haut {
-  background: var(--sang); color: #fff;
+  background: var(--primaire); color: #fff;
   padding: calc(var(--e8) + env(safe-area-inset-top)) var(--e5) var(--e9);
   display: flex; justify-content: center;
   clip-path: polygon(0 0, 100% 0, 100% 86%, 0 100%);
@@ -418,7 +430,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .etapes__numero {
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
-  border: 1.5px solid var(--sang); color: var(--sang);
+  border: 1.5px solid var(--primaire); color: var(--primaire);
   font-weight: 700; font-size: var(--t-appui); border-radius: 50%;
 }
 
@@ -427,7 +439,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
    ===================================================================== */
 .carte-haut {
   position: relative;
-  background: var(--sang); color: #fff;
+  background: var(--primaire); color: #fff;
   padding: calc(var(--e5) + env(safe-area-inset-top)) var(--e5) var(--e9);
   clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
 }
@@ -448,7 +460,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
   width: 150px; height: 175px;
   margin-top: calc(-1 * var(--e8));
 }
-.goutte svg { width: 100%; height: 100%; filter: drop-shadow(0 10px 18px rgba(140, 28, 44, 0.25)); }
+.goutte svg { width: 100%; height: 100%; filter: drop-shadow(0 10px 18px rgba(217, 45, 32, 0.22)); }
 .goutte--bat svg { animation: battement 2.6s ease-in-out infinite; transform-origin: 50% 60%; }
 .goutte__texte {
   position: absolute; left: 0; right: 0; top: 52%;
@@ -473,7 +485,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .compte-a-rebours__barre { height: 6px; background: var(--trait); overflow: hidden; }
 .compte-a-rebours__barre span { display: block; height: 100%; background: var(--ocre); }
 
-.faits { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--trait); background: var(--surface); }
+.faits { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--trait); border-radius: var(--rayon); background: var(--surface); box-shadow: var(--ombre); overflow: hidden; }
 .faits > div { padding: var(--e4); display: flex; flex-direction: column; gap: 2px; }
 .faits > div + div { border-left: 1px solid var(--trait); }
 .faits__valeur { font-size: var(--t-titre-s); font-weight: 700; }
@@ -531,7 +543,7 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .zone-texte {
   width: 100%; min-height: 96px; resize: vertical;
   padding: var(--e3);
-  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: 0;
+  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
   font: inherit; font-size: var(--t-corps); color: var(--encre);
 }
 .zone-texte:focus { outline: none; border-color: var(--encre); box-shadow: inset 0 0 0 1px var(--encre); }
@@ -539,9 +551,9 @@ select.champ__saisie { appearance: none; cursor: pointer; }
 .formulaire-section > h2 { font-size: var(--t-lead); font-weight: 700; }
 .reference {
   font-family: var(--police-chiffres); font-size: var(--t-titre); font-weight: 700;
-  letter-spacing: 0.04em; color: var(--sang);
-  padding: var(--e4); border: 1.5px dashed var(--sang); background: var(--surface);
-  text-align: center;
+  letter-spacing: 0.04em; color: var(--primaire);
+  padding: var(--e4); border: 1.5px dashed var(--primaire); background: var(--surface);
+  border-radius: var(--rayon); text-align: center;
 }
 .cases-liste { display: flex; flex-direction: column; gap: var(--e3); }
 /* Pages publiques affichées avec la barre du bas (donneur connecté). */
