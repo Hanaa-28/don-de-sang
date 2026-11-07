@@ -1,0 +1,16 @@
+{ "donnees": {
+  "id": "dc_007", "reference": "CAMP-2026-0007",
+  "structure": "Association des étudiants du 2iE", "typeStructure": "etablissement_superieur",
+  "responsable": "Kaboré Issa", "telephone": "+22670112233",
+  "zone": { "id": "z_06", "nom": "Campus 2iE", "ville": "Ouagadougou" },
+  "lieu": "Amphithéâtre principal, campus de Kamboinsé",
+  "dateSouhaitee": "2026-11-28", "moment": "matin", "participantsAttendus": 80,
+  "equipements": ["salle_ou_abri", "tables_chaises", "electricite", "eau"],
+  "precisions": "Nous avons déjà organisé une collecte en 2025 avec 54 dons.",
+  "statut": "acceptee", "creeLe": "2026-11-02T09:15:00Z",
+  "reponseCnts": {
+    "message": "Votre collecte est programmée. Une équipe mobile du CNTS viendra avec le matériel de prélèvement. Prévoyez un espace calme pour l'entretien médical.",
+    "dateRetenue": "2026-11-28", "heureDebut": "08:00", "objectifPoches": 60,
+    "contact": "Mme Ouédraogo, collectes mobiles CNTS — 25 00 00 30"
+  }
+} }

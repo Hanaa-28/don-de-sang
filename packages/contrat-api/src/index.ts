@@ -344,3 +344,236 @@ export interface AgentConnexionReponse {
   jeton: string;
   utilisateur: AgentConnecte;
 }
+
+// =====================================================================
+// Plateforme du CNTS — accueil (P3) : retrouver, inscrire sur place,
+// réinitialiser le mot de passe d'un donneur.
+// =====================================================================
+
+/** GET /donneurs?telephone=… — le donneur tel que le voit l'agent d'accueil. */
+export interface DonneurAgent {
+  id: string;
+  numeroDonneur: string;
+  nom: string;
+  prenom: string;
+  sexe: Sexe;
+  dateNaissance: string;
+  telephone: string;
+  telephoneVerifie: boolean;
+  groupeSanguin: GroupeSanguin | null;
+  zone: Zone | null;
+  canaux: Canal[];
+  enPause: boolean;
+  actif: boolean;
+  origine: "application" | "sur_place";
+  creeLe: string;
+}
+
+/** POST /donneurs — inscrire un donneur sur place (sans l'application). */
+export interface InscriptionSurPlaceRequete {
+  nom: string;
+  prenom: string;
+  sexe: Sexe;
+  dateNaissance: string;          // AAAA-MM-JJ
+  telephone: string;              // +226XXXXXXXX
+  zoneId?: string | null;
+  groupeSanguin?: GroupeSanguin | null;
+  canaux?: Canal[];
+}
+
+/** POST /donneurs/:id/reinitialisation — réponse : mot de passe temporaire en clair. */
+export interface ReinitialisationMotDePasseReponse {
+  motDePasseTemporaire: string;
+}
+
+// =====================================================================
+// Plateforme du CNTS — collecte et laboratoire (P3, P4, P5)
+// =====================================================================
+
+/** Statut d'une poche dans son parcours (prélèvement → produits). */
+export type StatutPoche = "prelevee" | "en_analyse" | "conforme" | "non_conforme" | "preparee" | "detruite";
+
+/** POST /passages — enregistrer une venue (P3). Réponse : Passage. */
+export interface EnregistrerPassageRequete {
+  donneurId: string;
+  resultat: "apte" | "ajourne";
+  /** Requis si « ajourné » : date jusqu'à laquelle le donneur ne peut pas revenir. */
+  ajourneJusquau?: string | null;
+  /** Alerte d'origine, si la venue fait suite à un appel au don. */
+  alerteId?: string | null;
+}
+
+export interface Passage {
+  id: string;
+  donneurId: string;
+  numeroDonneur: string;
+  siteId: string;
+  date: string;                      // AAAA-MM-JJ
+  resultat: "apte" | "ajourne";
+  ajourneJusquau: string | null;
+  alerteId: string | null;
+  creeLe: string;
+}
+
+/** POST /poches — créer une poche et générer son code (P3). Réponse : Poche. */
+export interface CreerPocheRequete {
+  passageId: string;
+  volume?: number | null;            // millilitres
+}
+
+export interface Poche {
+  id: string;
+  code: string;                      // ex. OUA-26-04812-K
+  donneurId: string;
+  passageId: string;
+  siteId: string;
+  date: string;
+  volume: number | null;
+  statut: StatutPoche;
+  creeLe: string;
+}
+
+/** POST /poches/:code/analyse — enregistrer l'analyse (P4). Réponse : Analyse. */
+export interface EnregistrerAnalyseRequete {
+  groupeSanguin: GroupeSanguin;
+  resultat: "conforme" | "non_conforme";
+}
+
+export interface Analyse {
+  id: string;
+  pocheId: string;
+  code: string;
+  groupeSanguin: GroupeSanguin;
+  resultat: "conforme" | "non_conforme";
+  date: string;
+}
+
+/** POST /poches/:code/preparation — créer les produits (P5). Réponse : Produit[]. */
+export interface PreparerPocheRequete {
+  produits: ("GR" | "PL" | "PQ")[];
+}
+
+export interface Produit {
+  id: string;
+  code: string;                      // ex. OUA-26-04812-K-GR
+  typeProduit: "GR" | "PL" | "PQ";
+  groupeSanguin: GroupeSanguin;
+  datePeremption: string | null;
+  statut: "disponible";
+  creeLe: string;
+}
+
+/**
+ * GET /codes/:code — fiche de traçabilité (P9). Le code est normalisé
+ * (majuscules, tirets ignorés) : « oua2604812k » est accepté.
+ */
+export interface FicheTracabilite {
+  code: string;
+  type: "poche" | "produit";
+  statut: string;
+  groupeSanguin: GroupeSanguin | null;
+  donneur: { numeroDonneur: string } | null;
+  site: string;
+  date: string;
+  evenements: {
+    type: string;
+    date: string;
+    site: string | null;
+    agent: string | null;
+  }[];
+}
+
+// =====================================================================
+// Plateforme du CNTS — stock, alertes, distribution (P6, P7, P8, P10)
+// =====================================================================
+
+/** GET /stock — le stock est calculé, jamais saisi. */
+export interface LigneStock {
+  typeProduit: "GR" | "PL" | "PQ";
+  groupeSanguin: GroupeSanguin;
+  quantite: number;
+  niveau: "suffisant" | "bas" | "critique";
+}
+
+/** POST /alertes/estimation — combien de donneurs seront prévenus. */
+export interface EstimationAlerteRequete {
+  zoneIds: string[];
+}
+
+export interface EstimationAlerteReponse {
+  donneursCibles: number;
+}
+
+/** POST /alertes — lancer une alerte (gestionnaire de stock). */
+export interface LancerAlerteRequete {
+  groupeSanguin: GroupeSanguin;
+  urgence: "normale" | "urgente" | "critique";
+  objectifDonneurs: number;
+  dateLimite: string;               // ISO 8601
+  message: string;
+  zoneIds: string[];
+}
+
+/** GET /alertes/:id — suivi des réponses en direct. */
+export interface SuiviAlerte {
+  id: string;
+  groupeSanguin: GroupeSanguin;
+  urgence: "normale" | "urgente" | "critique";
+  objectifDonneurs: number;
+  dateLimite: string;
+  statut: "ouverte" | "cloturee";
+  message: string;
+  creeLe: string;
+  compteurs: { jeViens: number; pasDisponible: number; besoinTransport: number };
+  donneurs: {
+    numeroDonneur: string;
+    nom: string;
+    reponse: "je_viens" | "pas_disponible";
+    momentPassage: string | null;
+    besoinTransport: boolean;
+  }[];
+}
+
+/** POST /demandes — une dépôt/hôpital demande des produits. */
+export interface LigneDemande {
+  typeProduit: "GR" | "PL" | "PQ";
+  groupeSanguin: GroupeSanguin;
+  quantite: number;
+}
+
+export interface DemandeRequete {
+  siteFournisseurId: string;
+  urgence: "normale" | "urgente" | "critique";
+  lignes: LigneDemande[];
+}
+
+export interface Demande {
+  id: string;
+  siteDemandeurId: string;
+  siteFournisseurId: string;
+  urgence: string;
+  statut: string;
+  date: string;
+  lignes: LigneDemande[];
+}
+
+/** POST /expeditions — le centre envoie des produits. */
+export interface ExpeditionRequete {
+  demandeId: string;
+  produitIds: string[];
+}
+
+export interface Expedition {
+  id: string;
+  demandeId: string;
+  siteDepartId: string;
+  siteArriveeId: string;
+  statut: "en_cours" | "recue";
+  produits: string[];               // codes des produits
+}
+
+/** POST /delivrances — délivrer un produit à un service. */
+export interface DelivranceRequete {
+  code: string;
+  service: string;
+}

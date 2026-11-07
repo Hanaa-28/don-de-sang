@@ -5,12 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@dds/contrat-api": "*",
     "bcryptjs": "^3.0.3",
     "cors": "2.8.5",
     "dotenv": "17.2.2",

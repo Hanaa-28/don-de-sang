@@ -9,9 +9,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@dds/contrat-api": "*",
+    "@dds/contrat-api": "file:./contrat-api",
     "lucide-react": "1.50.0",
-    "next": "16.4.0",
+    "next": "16.4.5",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },

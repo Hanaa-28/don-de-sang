@@ -9,8 +9,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@dds/contrat-api": "*",
-    "next": "16.4.0",
+    "@dds/contrat-api": "file:./contrat-api",
+    "next": "16.4.5",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
