@@ -4,8 +4,8 @@
  * C'est le SEUL endroit où l'application parle au backend : les écrans appellent
  * `api.xxx()` et ne savent pas d'où viennent les données.
  *
- * NEXT_PUBLIC_UTILISER_EXEMPLES=true  → simulateur (exemples JSON du contrat), semaines 3-4
- * NEXT_PUBLIC_UTILISER_EXEMPLES=false → vrai backend, à partir de la semaine 5
+ * NEXT_PUBLIC_UTILISER_EXEMPLES=true  → simulateur (exemples JSON du contrat), démonstration
+ * (absent ou false)                   → vrai backend (comportement par défaut)
  *
  * Les routes et les types viennent de packages/contrat-api : si le contrat change,
  * TypeScript signale ici ce qu'il faut adapter.
@@ -48,7 +48,7 @@ export interface ApiDonneur {
   suivreDemandeCampagne(corps: SuiviDemandeCampagneRequete): Promise<DemandeCampagne>;
 }
 
-export const UTILISER_EXEMPLES = process.env.NEXT_PUBLIC_UTILISER_EXEMPLES !== "false";
+export const UTILISER_EXEMPLES = process.env.NEXT_PUBLIC_UTILISER_EXEMPLES === "true";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 type Methode = "GET" | "POST" | "PUT" | "PATCH";
