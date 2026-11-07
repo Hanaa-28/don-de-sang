@@ -26,6 +26,19 @@ app.use(express.json());
 // Les routes sont montées sous un préfixe (vide en local, "/api" sur Vercel).
 const base = config.apiBasePath;
 
+// Racine : petit point d'entrée lisible pour les humains. L'API elle-même vit
+// sous /api (ou à la racine en local) ; ici on rappelle simplement où elle est.
+app.get("/", (_req, res) => {
+  res.json({
+    donnees: {
+      nom: "API Don de sang (CNTS)",
+      statut: "/sante",
+      zones: "/zones",
+      prefixe: base || "(aucun)",
+    },
+  });
+});
+
 app.use(`${base}/sante`, routeSante);
 app.use(`${base}/auth`, routeAuth);
 
