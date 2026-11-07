@@ -8,6 +8,9 @@ import { routeReferentiels } from "./routes/referentiels.js";
 import { routeDonneurs } from "./routes/donneurs.js";
 import { routeAlertes } from "./routes/alertes.js";
 import { routeGestion } from "./routes/gestion.js";
+import { routePassages } from "./routes/passages.js";
+import { routePoches } from "./routes/poches.js";
+import { routeCodes } from "./routes/codes.js";
 import { authentifier } from "./middlewares/authentification.js";
 import { exigerDonneur } from "./middlewares/donneur.js";
 import { exigerRole } from "./middlewares/roles.js";
@@ -52,6 +55,11 @@ app.use(`${base}/alertes`, authentifier, exigerDonneur, routeAlertes);
 // Plateforme — agent d'accueil (P3).
 app.use(`${base}/donneurs`, authentifier, exigerRole("agent_accueil", "admin"), routeGestion);
 
-// À venir : /poches /labo (S5), /stock /distribution (S6), /tracabilite (S7)
+// Plateforme — collecte (P3), laboratoire (P4/P5) et traçabilité (P9).
+app.use(`${base}/passages`, authentifier, exigerRole("agent_accueil", "agent_prelevement", "admin"), routePassages);
+app.use(`${base}/poches`, authentifier, routePoches);
+app.use(`${base}/codes`, authentifier, exigerRole("agent_accueil", "agent_prelevement", "agent_labo", "agent_stock", "agent_depot", "admin"), routeCodes);
+
+// À venir : /stock /distribution (S6)
 
 app.use(gestionErreurs);

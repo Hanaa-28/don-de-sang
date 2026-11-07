@@ -385,3 +385,100 @@ export interface InscriptionSurPlaceRequete {
 export interface ReinitialisationMotDePasseReponse {
   motDePasseTemporaire: string;
 }
+
+// =====================================================================
+// Plateforme du CNTS — collecte et laboratoire (P3, P4, P5)
+// =====================================================================
+
+/** Statut d'une poche dans son parcours (prélèvement → produits). */
+export type StatutPoche = "prelevee" | "en_analyse" | "conforme" | "non_conforme" | "preparee" | "detruite";
+
+/** POST /passages — enregistrer une venue (P3). Réponse : Passage. */
+export interface EnregistrerPassageRequete {
+  donneurId: string;
+  resultat: "apte" | "ajourne";
+  /** Requis si « ajourné » : date jusqu'à laquelle le donneur ne peut pas revenir. */
+  ajourneJusquau?: string | null;
+  /** Alerte d'origine, si la venue fait suite à un appel au don. */
+  alerteId?: string | null;
+}
+
+export interface Passage {
+  id: string;
+  donneurId: string;
+  numeroDonneur: string;
+  siteId: string;
+  date: string;                      // AAAA-MM-JJ
+  resultat: "apte" | "ajourne";
+  ajourneJusquau: string | null;
+  alerteId: string | null;
+  creeLe: string;
+}
+
+/** POST /poches — créer une poche et générer son code (P3). Réponse : Poche. */
+export interface CreerPocheRequete {
+  passageId: string;
+  volume?: number | null;            // millilitres
+}
+
+export interface Poche {
+  id: string;
+  code: string;                      // ex. OUA-26-04812-K
+  donneurId: string;
+  passageId: string;
+  siteId: string;
+  date: string;
+  volume: number | null;
+  statut: StatutPoche;
+  creeLe: string;
+}
+
+/** POST /poches/:code/analyse — enregistrer l'analyse (P4). Réponse : Analyse. */
+export interface EnregistrerAnalyseRequete {
+  groupeSanguin: GroupeSanguin;
+  resultat: "conforme" | "non_conforme";
+}
+
+export interface Analyse {
+  id: string;
+  pocheId: string;
+  code: string;
+  groupeSanguin: GroupeSanguin;
+  resultat: "conforme" | "non_conforme";
+  date: string;
+}
+
+/** POST /poches/:code/preparation — créer les produits (P5). Réponse : Produit[]. */
+export interface PreparerPocheRequete {
+  produits: ("GR" | "PL" | "PQ")[];
+}
+
+export interface Produit {
+  id: string;
+  code: string;                      // ex. OUA-26-04812-K-GR
+  typeProduit: "GR" | "PL" | "PQ";
+  groupeSanguin: GroupeSanguin;
+  datePeremption: string | null;
+  statut: "disponible";
+  creeLe: string;
+}
+
+/**
+ * GET /codes/:code — fiche de traçabilité (P9). Le code est normalisé
+ * (majuscules, tirets ignorés) : « oua2604812k » est accepté.
+ */
+export interface FicheTracabilite {
+  code: string;
+  type: "poche" | "produit";
+  statut: string;
+  groupeSanguin: GroupeSanguin | null;
+  donneur: { numeroDonneur: string } | null;
+  site: string;
+  date: string;
+  evenements: {
+    type: string;
+    date: string;
+    site: string | null;
+    agent: string | null;
+  }[];
+}
