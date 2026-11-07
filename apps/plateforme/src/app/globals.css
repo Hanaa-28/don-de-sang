@@ -1,3 +1,282 @@
-/* Styles de base provisoires : le vrai design viendra des maquettes (S1-S2). */
+/* =====================================================================
+   Plateforme CNTS (espace agent) — système visuel
+   ---------------------------------------------------------------------
+   Reprend l'identité DJIGUI telle que portée dans apps/donneur (mêmes
+   variables, même échelle d'espacement) et y ajoute les gabarits
+   professionnels (rail de navigation, tableau de bord) : l'application
+   des donneurs tient sur 440px, celle-ci est un outil de poste de travail.
+   ===================================================================== */
+
+:root {
+  /* Couleurs — identiques à apps/donneur/src/app/globals.css */
+  --sang: #8C1C2C;
+  --sang-fonce: #6E1522;
+  --sang-clair: #F3E7E9;
+  --encre: #241E1D;
+  --encre-2: #6B5F5C;
+  --seve: #2E6A4F;
+  --seve-clair: #E7F0EB;
+  --ocre: #9A6400;
+  --ocre-clair: #F7EFE0;
+  --trait: #E5DCD6;
+  --trait-fort: #C9BDB5;
+  --fond: #FBF7F4;
+  --surface: #FFFFFF;
+
+  /* Espacement, base 4 */
+  --e1: 4px;  --e2: 8px;  --e3: 12px; --e4: 16px; --e5: 20px;
+  --e6: 24px; --e7: 32px; --e8: 40px; --e9: 56px; --e10: 80px;
+
+  /* Typographie */
+  --t-micro: 12px; --t-petit: 13px; --t-appui: 14px; --t-corps: 16px; --t-lead: 18px;
+  --t-titre-s: 20px; --t-titre: 24px; --t-grand: 30px; --t-enorme: 44px;
+  --police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --police-chiffres: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  /* Gestes et gabarits */
+  --cible: 44px;
+  --hauteur-action: 48px;
+  --largeur: 440px;          /* écran de connexion, centré comme chez le donneur */
+  --largeur-rail: 248px;
+  --duree: 180ms;
+  --courbe: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; }
+html { background: var(--fond); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--police);
+  font-size: var(--t-corps);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--encre); outline-offset: 3px; }
+::selection { background: var(--sang); color: #fff; }
+
+.chiffres { font-family: var(--police-chiffres); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+/* =====================================================================
+   1. Piles et rangées
+   ===================================================================== */
+.pile   { display: flex; flex-direction: column; gap: var(--e4); }
+.pile-s { display: flex; flex-direction: column; gap: var(--e2); }
+.pile-l { display: flex; flex-direction: column; gap: var(--e6); }
+.rang   { display: flex; align-items: center; gap: var(--e3); }
+.rang-espace { display: flex; align-items: center; justify-content: space-between; gap: var(--e3); }
+.filet  { border: 0; border-top: 1px solid var(--trait); margin: 0; width: 100%; }
+
+/* =====================================================================
+   2. Texte
+   ===================================================================== */
+.titre-grand { font-size: var(--t-grand); font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+.titre       { font-size: var(--t-titre); font-weight: 650; line-height: 1.2; }
+.lead        { font-size: var(--t-lead); font-weight: 600; line-height: 1.35; }
+.appui       { font-size: var(--t-appui); color: var(--encre-2); }
+.petit       { font-size: var(--t-petit); color: var(--encre-2); }
+.fort        { font-weight: 600; }
+.centre      { text-align: center; }
+
+/* =====================================================================
+   3. Boutons
+   ===================================================================== */
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e2);
+  min-height: var(--hauteur-action);
+  padding: 0 var(--e6);
+  border: 1px solid transparent;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duree) var(--courbe), color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe), transform 120ms var(--courbe);
+}
+.bouton:active:not(:disabled) { transform: scale(0.98); }
+.bouton:disabled { opacity: 0.4; cursor: not-allowed; }
+.bouton--large { width: 100%; }
+.bouton--compact { min-height: var(--cible); padding: 0 var(--e4); font-size: var(--t-appui); }
+.bouton--principal { background: var(--sang); color: #fff; }
+.bouton--principal:hover:not(:disabled) { background: var(--sang-fonce); }
+.bouton--secondaire { background: var(--surface); color: var(--encre); border-color: var(--trait-fort); }
+.bouton--secondaire:hover:not(:disabled) { border-color: var(--encre); }
+.bouton--danger { background: transparent; color: var(--sang); border-color: var(--sang); }
+.bouton--danger:hover:not(:disabled) { background: var(--sang); color: #fff; }
+.tourne { animation: tourne 0.8s linear infinite; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+
+/* =====================================================================
+   4. Champs
+   ===================================================================== */
+.champ { display: flex; flex-direction: column; gap: var(--e1); }
+.champ__etiquette { font-size: var(--t-appui); font-weight: 600; }
+.champ__groupe {
+  display: flex; align-items: center; gap: var(--e2);
+  min-height: var(--hauteur-action);
+  padding: 0 var(--e3);
+  background: var(--surface);
+  border: 1px solid var(--trait-fort);
+  transition: border-color var(--duree);
+}
+.champ__groupe:focus-within { border-color: var(--encre); box-shadow: inset 0 0 0 1px var(--encre); }
+.champ__saisie {
+  flex: 1; min-width: 0;
+  height: calc(var(--hauteur-action) - 2px);
+  border: 0; outline: 0; background: transparent;
+  font: inherit; font-size: var(--t-corps); color: var(--encre);
+}
+.champ__interne {
+  display: inline-flex; align-items: center; gap: var(--e1);
+  min-height: var(--cible); padding: 0 var(--e1);
+  border: 0; background: none; color: var(--encre-2); font-size: var(--t-petit); cursor: pointer;
+}
+.champ__aide { font-size: var(--t-petit); color: var(--encre-2); }
+.champ--erreur .champ__groupe { border-color: var(--sang); box-shadow: inset 0 0 0 1px var(--sang); }
+.champ--erreur .champ__aide-erreur { color: var(--sang); font-size: var(--t-petit); font-weight: 500; }
+
+/* =====================================================================
+   5. Messages et états
+   ===================================================================== */
+.message { display: flex; align-items: flex-start; gap: var(--e2); font-size: var(--t-appui); font-weight: 500; }
+.message svg { flex-shrink: 0; margin-top: 2px; }
+.message--erreur { color: var(--sang); }
+.message--reussite { color: var(--seve); }
+
+.encadre {
+  display: flex; align-items: flex-start; gap: var(--e3);
+  padding: var(--e4);
+  border-left: 3px solid var(--encre-2);
+  background: var(--surface);
+  font-size: var(--t-appui);
+}
+.encadre svg { flex-shrink: 0; margin-top: 2px; }
+.encadre--sang { border-left-color: var(--sang); background: var(--sang-clair); }
+.encadre--seve { border-left-color: var(--seve); background: var(--seve-clair); }
+.encadre--ocre { border-left-color: var(--ocre); background: var(--ocre-clair); }
+
+.pilule {
+  display: inline-flex; align-items: center; gap: var(--e2); align-self: flex-start;
+  padding: var(--e1) var(--e3);
+  border-radius: 999px;
+  font-weight: 700; font-size: var(--t-petit);
+}
+.pilule__point { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pilule--seve { background: var(--seve-clair); color: var(--seve); }
+.pilule--ocre { background: var(--ocre-clair); color: var(--ocre); }
+.pilule--sang { background: var(--sang-clair); color: var(--sang); }
+.pilule--neutre { background: var(--trait); color: var(--encre-2); }
+
+/* =====================================================================
+   6. Bloc de groupe sanguin
+   ===================================================================== */
+.bloc-groupe {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: var(--sang); color: #fff;
+  font-weight: 800; letter-spacing: -0.02em;
+}
+.bloc-groupe--l { width: 64px; height: 64px; font-size: var(--t-titre); }
+.bloc-groupe--m { width: 48px; height: 48px; font-size: var(--t-lead); }
+.bloc-groupe--s { width: 36px; height: 36px; font-size: var(--t-appui); }
+
+/* =====================================================================
+   7. Écran de connexion — colonne centrée, comme chez le donneur
+   ===================================================================== */
+.acces {
+  max-width: var(--largeur);
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: var(--e8) var(--e5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--e6);
+}
+.acces__corps { display: flex; flex-direction: column; gap: var(--e7); }
+.acces__entete { display: flex; flex-direction: column; gap: var(--e2); }
+
+/* =====================================================================
+   8. Gabarit professionnel — rail + contenu
+   ===================================================================== */
+.cadre-pro { display: flex; min-height: 100dvh; }
+
+.rail {
+  width: var(--largeur-rail); flex-shrink: 0;
+  display: flex; flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--trait);
+  padding: var(--e5) var(--e4);
+}
+.rail__entete { display: flex; flex-direction: column; gap: 2px; padding: 0 var(--e3) var(--e6); }
+.mot-ecrit { font-size: var(--t-lead); font-weight: 800; letter-spacing: -0.01em; }
+.rail__sections { display: flex; flex-direction: column; gap: var(--e1); flex: 1; }
+.rail__lien {
+  display: flex; align-items: center; gap: var(--e3);
+  min-height: var(--cible); padding: 0 var(--e3);
+  border: 0; background: none; width: 100%;
+  color: var(--encre); font-size: var(--t-appui); font-weight: 500;
+  text-decoration: none; cursor: pointer; text-align: left;
+}
+.rail__lien:hover { background: var(--fond); }
+.rail__lien[aria-current="page"] { background: var(--sang-clair); color: var(--sang); font-weight: 700; }
+.rail__lien--a-venir { color: var(--encre-2); cursor: default; opacity: 0.6; }
+.rail__lien--a-venir:hover { background: none; }
+.rail__etiquette-venir {
+  margin-left: auto; font-size: var(--t-micro); font-weight: 600;
+  padding: 2px var(--e2); border: 1px solid var(--trait-fort); border-radius: 999px;
+}
+.rail__pied { display: flex; flex-direction: column; gap: var(--e3); padding-top: var(--e5); border-top: 1px solid var(--trait); }
+
+.contenu-pro { flex: 1; min-width: 0; padding: var(--e7) var(--e8); max-width: 1120px; }
+
+.entete { display: flex; align-items: baseline; justify-content: space-between; gap: var(--e3); }
+.entete__titre { font-size: var(--t-titre); font-weight: 700; line-height: 1.2; }
+
+.grille-stock { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--e4); }
+.carte-stock {
+  display: flex; align-items: flex-start; gap: var(--e3);
+  padding: var(--e4);
+  background: var(--surface); border: 1px solid var(--trait);
+}
+
+/* En dessous de 900px, le rail devient un bandeau compact en haut de
+   l'écran : titre, puis sections en bande défilante horizontale, puis
+   agent + déconnexion. Rien n'est caché, tout reste accessible au pouce. */
+@media (max-width: 900px) {
+  .cadre-pro { flex-direction: column; }
+  .rail {
+    width: 100%; flex-shrink: 0;
+    border-right: 0; border-bottom: 1px solid var(--trait);
+    padding: var(--e3) var(--e4);
+    gap: var(--e3);
+  }
+  .rail__entete { padding: 0; }
+  .rail__sections {
+    flex-direction: row; flex-wrap: nowrap; overflow-x: auto;
+    gap: var(--e2); padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rail__lien {
+    flex-direction: column; flex-shrink: 0; width: auto;
+    gap: 2px; min-height: var(--cible); padding: var(--e2) var(--e3);
+    font-size: var(--t-micro); text-align: center; white-space: nowrap;
+  }
+  .rail__etiquette-venir { display: none; }
+  .rail__pied {
+    flex-direction: row; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--trait); padding-top: var(--e3);
+  }
+  .contenu-pro { padding: var(--e6) var(--e5) var(--e8); }
+  .entete { flex-direction: column; align-items: flex-start; gap: var(--e1); }
+  .grille-stock { grid-template-columns: repeat(2, 1fr); gap: var(--e3); }
+}
+@media (max-width: 480px) {
+  .grille-stock { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -344,3 +344,33 @@ export interface AgentConnexionReponse {
   jeton: string;
   utilisateur: AgentConnecte;
 }
+
+// =====================================================================
+// Plateforme du CNTS — tableau de bord de l'espace agent (P6, provisoire)
+//
+// Provisoire : aucune route backend n'existe encore pour ce tableau de
+// bord (seule l'authentification agent est livrée à ce jour). Ce type
+// et son exemple JSON (exemples/tableau-de-bord-agent.json) sont une
+// proposition de Solange, à valider avec Zozerigué avant de brancher
+// la vraie route /agent/tableau-de-bord (S6, cahier des charges).
+// =====================================================================
+
+export type NiveauStock = "normal" | "bas" | "critique" | "en_attente";
+
+/** Une ligne du tableau, pour un groupe sanguin. */
+export interface LigneStockGroupe {
+  groupeSanguin: GroupeSanguin;
+  pochesDisponibles: number;
+  seuilBas: number | null;
+  seuilCritique: number | null;
+  niveau: NiveauStock;
+  /** Dernier mouvement enregistré sur ce groupe, ISO 8601 ; null si aucun. */
+  dernierMouvement: string | null;
+}
+
+/** GET /agent/tableau-de-bord — tableau de bord de l'espace agent. */
+export interface TableauDeBordAgent {
+  site: { id: string; nom: string };
+  stock: LigneStockGroupe[];
+  nbCritiques: number;
+}
