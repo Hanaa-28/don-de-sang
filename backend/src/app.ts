@@ -11,6 +11,9 @@ import { routeGestion } from "./routes/gestion.js";
 import { routePassages } from "./routes/passages.js";
 import { routePoches } from "./routes/poches.js";
 import { routeCodes } from "./routes/codes.js";
+import { routeStock, routeProduits } from "./routes/stock.js";
+import { routeAlertesGestion } from "./routes/alertes-gestion.js";
+import { routeDistribution } from "./routes/distribution.js";
 import { authentifier } from "./middlewares/authentification.js";
 import { exigerDonneur } from "./middlewares/donneur.js";
 import { exigerRole } from "./middlewares/roles.js";
@@ -50,6 +53,11 @@ app.use(`${base}/`, routeReferentiels);
 
 // Application des donneurs (D8 à D14) — accès donneur connecté uniquement.
 app.use(`${base}/donneurs/moi`, authentifier, exigerDonneur, routeDonneurs);
+
+// Alertes côté gestionnaire (P7) — monté AVANT le donneur pour ne pas bloquer
+// la réponse du donneur (POST /alertes/:id/reponse).
+app.use(`${base}/alertes`, authentifier, routeAlertesGestion);
+// Alertes côté donneur (réponse à une alerte).
 app.use(`${base}/alertes`, authentifier, exigerDonneur, routeAlertes);
 
 // Plateforme — agent d'accueil (P3).
@@ -60,6 +68,11 @@ app.use(`${base}/passages`, authentifier, exigerRole("agent_accueil", "agent_pre
 app.use(`${base}/poches`, authentifier, routePoches);
 app.use(`${base}/codes`, authentifier, exigerRole("agent_accueil", "agent_prelevement", "agent_labo", "agent_stock", "agent_depot", "admin"), routeCodes);
 
-// À venir : /stock /distribution (S6)
+// Plateforme — stock (P6), produits (P6) et distribution (P8/P10).
+app.use(`${base}/stock`, authentifier, exigerRole("agent_stock", "agent_depot", "admin"), routeStock);
+app.use(`${base}/produits`, authentifier, exigerRole("agent_stock", "agent_depot", "admin"), routeProduits);
+app.use(`${base}`, routeDistribution);
+
+// À venir : (rien — toutes les routes du prototype sont montées)
 
 app.use(gestionErreurs);
