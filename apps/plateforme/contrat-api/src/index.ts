@@ -482,3 +482,98 @@ export interface FicheTracabilite {
     agent: string | null;
   }[];
 }
+
+// =====================================================================
+// Plateforme du CNTS — stock, alertes, distribution (P6, P7, P8, P10)
+// =====================================================================
+
+/** GET /stock — le stock est calculé, jamais saisi. */
+export interface LigneStock {
+  typeProduit: "GR" | "PL" | "PQ";
+  groupeSanguin: GroupeSanguin;
+  quantite: number;
+  niveau: "suffisant" | "bas" | "critique";
+}
+
+/** POST /alertes/estimation — combien de donneurs seront prévenus. */
+export interface EstimationAlerteRequete {
+  zoneIds: string[];
+}
+
+export interface EstimationAlerteReponse {
+  donneursCibles: number;
+}
+
+/** POST /alertes — lancer une alerte (gestionnaire de stock). */
+export interface LancerAlerteRequete {
+  groupeSanguin: GroupeSanguin;
+  urgence: "normale" | "urgente" | "critique";
+  objectifDonneurs: number;
+  dateLimite: string;               // ISO 8601
+  message: string;
+  zoneIds: string[];
+}
+
+/** GET /alertes/:id — suivi des réponses en direct. */
+export interface SuiviAlerte {
+  id: string;
+  groupeSanguin: GroupeSanguin;
+  urgence: "normale" | "urgente" | "critique";
+  objectifDonneurs: number;
+  dateLimite: string;
+  statut: "ouverte" | "cloturee";
+  message: string;
+  creeLe: string;
+  compteurs: { jeViens: number; pasDisponible: number; besoinTransport: number };
+  donneurs: {
+    numeroDonneur: string;
+    nom: string;
+    reponse: "je_viens" | "pas_disponible";
+    momentPassage: string | null;
+    besoinTransport: boolean;
+  }[];
+}
+
+/** POST /demandes — une dépôt/hôpital demande des produits. */
+export interface LigneDemande {
+  typeProduit: "GR" | "PL" | "PQ";
+  groupeSanguin: GroupeSanguin;
+  quantite: number;
+}
+
+export interface DemandeRequete {
+  siteFournisseurId: string;
+  urgence: "normale" | "urgente" | "critique";
+  lignes: LigneDemande[];
+}
+
+export interface Demande {
+  id: string;
+  siteDemandeurId: string;
+  siteFournisseurId: string;
+  urgence: string;
+  statut: string;
+  date: string;
+  lignes: LigneDemande[];
+}
+
+/** POST /expeditions — le centre envoie des produits. */
+export interface ExpeditionRequete {
+  demandeId: string;
+  produitIds: string[];
+}
+
+export interface Expedition {
+  id: string;
+  demandeId: string;
+  siteDepartId: string;
+  siteArriveeId: string;
+  statut: "en_cours" | "recue";
+  produits: string[];               // codes des produits
+}
+
+/** POST /delivrances — délivrer un produit à un service. */
+export interface DelivranceRequete {
+  code: string;
+  service: string;
+}
