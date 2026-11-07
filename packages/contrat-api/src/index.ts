@@ -324,3 +324,23 @@ export interface TraiterDemandeCampagneRequete {
   heureDebut?: string;
   objectifPoches?: number;
 }
+
+// =====================================================================
+// Plateforme du CNTS — authentification (Annexe C)
+// =====================================================================
+
+/** POST /auth/agent/connexion — connexion d'un agent par e-mail + mot de passe. */
+export interface AgentConnexionRequete { email: string; motDePasse: string }
+
+export interface AgentConnecte {
+  id: string;
+  nomComplet: string;
+  email: string;
+  roles: Role[];
+  siteId: string;
+}
+
+export interface AgentConnexionReponse {
+  jeton: string;
+  utilisateur: AgentConnecte;
+}

@@ -1,5 +1,5 @@
 /** Client d'API de la plateforme (espace agent + espace administrateur). */
-import type { Reponse, ConnexionRequete, ConnexionReponse } from "@dds/contrat-api";
+import type { Reponse, AgentConnexionRequete, AgentConnexionReponse } from "@dds/contrat-api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -19,6 +19,6 @@ export async function appel<T>(chemin: string, options: RequestInit = {}): Promi
 }
 
 export const api = {
-  connexion: (r: ConnexionRequete) =>
-    appel<ConnexionReponse>("/auth/connexion", { method: "POST", body: JSON.stringify(r) }),
+  connexion: (r: AgentConnexionRequete) =>
+    appel<AgentConnexionReponse>("/auth/agent/connexion", { method: "POST", body: JSON.stringify(r) }),
 };
