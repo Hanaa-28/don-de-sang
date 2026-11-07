@@ -23,18 +23,21 @@ app.use(helmet());
 app.use(cors({ origin: config.corsOrigines }));
 app.use(express.json());
 
-app.use("/sante", routeSante);
-app.use("/auth", routeAuth);
+// Les routes sont montées sous un préfixe (vide en local, "/api" sur Vercel).
+const base = config.apiBasePath;
+
+app.use(`${base}/sante`, routeSante);
+app.use(`${base}/auth`, routeAuth);
 
 // Référentiels publics (zones, centres).
-app.use("/", routeReferentiels);
+app.use(`${base}/`, routeReferentiels);
 
 // Application des donneurs (D8 à D14) — accès donneur connecté uniquement.
-app.use("/donneurs/moi", authentifier, exigerDonneur, routeDonneurs);
-app.use("/alertes", authentifier, exigerDonneur, routeAlertes);
+app.use(`${base}/donneurs/moi`, authentifier, exigerDonneur, routeDonneurs);
+app.use(`${base}/alertes`, authentifier, exigerDonneur, routeAlertes);
 
 // Plateforme — agent d'accueil (P3).
-app.use("/donneurs", authentifier, exigerRole("agent_accueil", "admin"), routeGestion);
+app.use(`${base}/donneurs`, authentifier, exigerRole("agent_accueil", "admin"), routeGestion);
 
 // À venir : /poches /labo (S5), /stock /distribution (S6), /tracabilite (S7)
 

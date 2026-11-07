@@ -16,6 +16,8 @@ if (!JWT_SECRET) {
 
 export const config = {
   port: Number(process.env.PORT ?? 4000),
+  /** Préfixe des routes. Vide en local ; "/api" sur Vercel (fonctions serverless). */
+  apiBasePath: process.env.API_BASE_PATH ?? "",
   corsOrigines: (process.env.CORS_ORIGINES ?? "http://localhost:3000,http://localhost:3001").split(","),
   databaseUrl: DATABASE_URL,
   jwtSecret: JWT_SECRET,
