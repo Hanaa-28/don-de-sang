@@ -3,12 +3,13 @@
  * parle au backend. Les types viennent de @dds/contrat-api.
  */
 import type {
-  Analyse, AgentConnexionReponse, CreerPocheRequete, DelivranceRequete, Demande,
+  AgentCompte, AgentConnexionReponse, Analyse, CreerAgentRequete, CreerCentreRequete,
+  CreerPocheRequete, CreerZoneRequete, DelivranceRequete, Demande,
   DemandeRequete, DonneurAgent, EnregistrerAnalyseRequete, EnregistrerPassageRequete,
   EstimationAlerteReponse, Expedition, ExpeditionRequete, FicheTracabilite,
-  InscriptionSurPlaceRequete, LancerAlerteRequete, LigneStock, Passage, Poche,
-  PreparerPocheRequete, Produit, ReinitialisationMotDePasseReponse, Reponse,
-  ReponseErreur, SuiviAlerte,
+  InscriptionSurPlaceRequete, LancerAlerteRequete, LigneStock, ModifierRegleRequete,
+  Passage, Poche, PreparerPocheRequete, Produit, Regle, ReinitialisationMotDePasseReponse,
+  Reponse, ReponseErreur, SiteAdmin, Statistiques, SuiviAlerte,
 } from "@dds/contrat-api";
 import { lireJeton } from "./session";
 
@@ -103,4 +104,14 @@ export const api = {
   creerExpedition: (corps: ExpeditionRequete) => appel<Expedition>("POST", "/expeditions", corps),
   recevoirExpedition: (id: string) => appel<Expedition>("POST", `/expeditions/${encodeURIComponent(id)}/reception`),
   delivrer: (corps: DelivranceRequete) => appel<{ code: string; service: string; statut: string }>("POST", "/delivrances", corps),
+
+  // Espace CNTS (administration)
+  agents: () => appel<AgentCompte[]>("GET", "/agents"),
+  creerAgent: (corps: CreerAgentRequete) => appel<AgentCompte>("POST", "/agents", corps),
+  sites: () => appel<SiteAdmin[]>("GET", "/sites"),
+  ajouterZone: (corps: CreerZoneRequete) => appel<{ id: string; nom: string; ville: string }>("POST", "/zones", corps),
+  ajouterCentre: (corps: CreerCentreRequete) => appel<{ id: string; code: string; nom: string; type: string }>("POST", "/centres", corps),
+  regles: () => appel<Regle[]>("GET", "/regles"),
+  modifierRegle: (cle: string, corps: ModifierRegleRequete) => appel<Regle>("PUT", `/regles/${encodeURIComponent(cle)}`, corps),
+  statistiques: () => appel<Statistiques>("GET", "/statistiques"),
 };

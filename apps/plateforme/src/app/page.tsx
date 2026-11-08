@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, messageDe } from "@/lib/api";
-import { lireJeton, ouvrirSession } from "@/lib/session";
+import { lireAgent, lireJeton, ouvrirSession } from "@/lib/session";
 
 export default function Connexion() {
   const routeur = useRouter();
@@ -13,7 +13,7 @@ export default function Connexion() {
   const [enCours, setEnCours] = useState(false);
 
   if (typeof window !== "undefined" && lireJeton()) {
-    routeur.replace("/agent");
+    routeur.replace(lireAgent()?.roles.includes("admin") ? "/admin" : "/agent");
     return null;
   }
 
@@ -24,7 +24,7 @@ export default function Connexion() {
     try {
       const session = await api.connexion(email, motDePasse);
       ouvrirSession(session.jeton, session.utilisateur);
-      routeur.replace("/agent");
+      routeur.replace(session.utilisateur.roles.includes("admin") ? "/admin" : "/agent");
     } catch (p) {
       setErreur(messageDe(p));
       setEnCours(false);
