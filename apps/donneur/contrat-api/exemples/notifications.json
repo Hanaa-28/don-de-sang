@@ -1,0 +1,5 @@
+{ "donnees": [
+  { "id": "n_80", "type": "alerte", "titre": "Le CNTS recherche des donneurs O+", "message": "Répondez avant le 12 novembre, 18h.", "lue": false, "creeLe": "2026-11-10T08:30:00Z", "lien": "/alertes/a_014" },
+  { "id": "n_77", "type": "eligibilite", "titre": "Vous pourrez bientôt donner", "message": "Votre délai entre deux dons se termine le 12 novembre.", "lue": false, "creeLe": "2026-11-05T07:00:00Z", "lien": "/carte" },
+  { "id": "n_60", "type": "compte", "titre": "Numéro vérifié", "message": "Votre numéro WhatsApp est confirmé. Vous recevrez les alertes du centre.", "lue": true, "creeLe": "2025-02-03T10:05:00Z", "lien": null }
+] }

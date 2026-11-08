@@ -1,3 +1,166 @@
-/* Styles de base provisoires : le vrai design viendra des maquettes (S1-S2). */
+/* =====================================================================
+   Plateforme du CNTS — système visuel (charte Doctolib, commune avec
+   l'application des donneurs).
+   ===================================================================== */
+
+:root {
+  --primaire: #0165FF;
+  --primaire-fonce: #0053C7;
+  --primaire-clair: #EBF3FF;
+  --sang: #D92D20;
+  --sang-fonce: #B42318;
+  --sang-clair: #FEE4E2;
+  --encre: #1B2733;
+  --encre-2: #64748B;
+  --seve: #0B8A5D;
+  --seve-clair: #E7F5EF;
+  --ocre: #B45309;
+  --ocre-clair: #FDF0E3;
+  --trait: #E6E8EB;
+  --trait-fort: #CBD5E1;
+  --fond: #F6F7F9;
+  --surface: #FFFFFF;
+
+  --e1: 4px; --e2: 8px; --e3: 12px; --e4: 16px; --e5: 20px;
+  --e6: 24px; --e7: 32px; --e8: 40px;
+
+  --t-micro: 12px; --t-petit: 13px; --t-appui: 14px; --t-corps: 16px;
+  --t-lead: 18px; --t-titre-s: 20px; --t-titre: 24px; --t-grand: 30px;
+  --police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --police-chiffres: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  --rayon: 12px;
+  --rayon-petit: 8px;
+  --ombre: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --cible: 44px;
+  --hauteur-action: 48px;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; }
+html { background: var(--fond); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--police);
+  font-size: var(--t-corps);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p { margin: 0; }
+button { font: inherit; color: inherit; }
+a { color: var(--primaire); text-decoration: none; }
+:focus-visible { outline: 2px solid var(--primaire); outline-offset: 2px; }
+.chiffres { font-family: var(--police-chiffres); font-variant-numeric: tabular-nums; }
+
+/* Gabarit */
+.page { max-width: 960px; margin: 0 auto; padding: var(--e5); display: flex; flex-direction: column; gap: var(--e5); }
+.entete { display: flex; align-items: center; justify-content: space-between; gap: var(--e3); }
+.entete__titre { font-size: var(--t-titre); font-weight: 700; }
+
+/* Piles et rangées */
+.pile { display: flex; flex-direction: column; gap: var(--e4); }
+.pile-s { display: flex; flex-direction: column; gap: var(--e2); }
+.rang { display: flex; align-items: center; gap: var(--e3); }
+.rang-espace { display: flex; align-items: center; justify-content: space-between; gap: var(--e3); }
+
+/* Texte */
+.titre { font-size: var(--t-titre); font-weight: 700; }
+.titre-s { font-size: var(--t-titre-s); font-weight: 650; }
+.lead { font-size: var(--t-lead); font-weight: 600; }
+.appui { font-size: var(--t-appui); color: var(--encre-2); }
+.petit { font-size: var(--t-petit); color: var(--encre-2); }
+.fort { font-weight: 600; }
+.section-titre { font-size: var(--t-appui); font-weight: 600; color: var(--encre-2); text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* Boutons */
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e2);
+  min-height: var(--hauteur-action); padding: 0 var(--e5);
+  border: 1px solid transparent; border-radius: var(--rayon-petit);
+  font-weight: 600; cursor: pointer;
+  transition: background 160ms, border-color 160ms, transform 120ms;
+}
+.bouton:active:not(:disabled) { transform: scale(0.98); }
+.bouton:disabled { opacity: 0.4; cursor: not-allowed; }
+.bouton--principal { background: var(--primaire); color: #fff; box-shadow: var(--ombre); }
+.bouton--principal:hover:not(:disabled) { background: var(--primaire-fonce); }
+.bouton--secondaire { background: var(--surface); color: var(--encre); border-color: var(--trait-fort); }
+.bouton--danger { background: transparent; color: var(--sang); border-color: var(--sang); }
+.bouton--plein { width: 100%; }
+
+/* Champs */
+.champ { display: flex; flex-direction: column; gap: var(--e1); }
+.champ__etiquette { font-size: var(--t-appui); font-weight: 600; }
+.champ__saisie {
+  width: 100%; min-height: var(--hauteur-action);
+  padding: 0 var(--e3);
+  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
+  font: inherit; font-size: var(--t-corps); color: var(--encre);
+}
+.champ__saisie:focus { outline: none; border-color: var(--primaire); box-shadow: 0 0 0 3px var(--primaire-clair); }
+
+/* Cartes et listes */
+.bloc { background: var(--surface); border: 1px solid var(--trait); border-radius: var(--rayon); padding: var(--e5); box-shadow: var(--ombre); }
+.ligne { display: flex; align-items: center; gap: var(--e3); padding: var(--e4) 0; border-bottom: 1px solid var(--trait); }
+.ligne:last-child { border-bottom: 0; }
+.ligne__corps { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+/* Badges */
+.pilule { display: inline-flex; align-items: center; gap: var(--e1); padding: 2px var(--e3); border-radius: 999px; font-size: var(--t-petit); font-weight: 600; }
+.pilule--seve { background: var(--seve-clair); color: var(--seve); }
+.pilule--ocre { background: var(--ocre-clair); color: var(--ocre); }
+.pilule--sang { background: var(--sang-clair); color: var(--sang); }
+.pilule--neutre { background: var(--trait); color: var(--encre-2); }
+.pilule--primaire { background: var(--primaire-clair); color: var(--primaire); }
+
+/* Messages */
+.message { font-size: var(--t-appui); font-weight: 500; }
+.message--erreur { color: var(--sang); }
+.message--reussite { color: var(--seve); }
+
+/* Accès (connexion) */
+.acces { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: var(--e5); }
+.acces__carte { width: 100%; max-width: 400px; }
+
+/* Chargement */
+.squelette { background: var(--trait); border-radius: var(--rayon-petit); animation: respire 1.4s ease-in-out infinite; }
+@keyframes respire { 50% { opacity: 0.5; } }
+
+/* Onglets */
+.onglets { display: flex; gap: var(--e1); flex-wrap: wrap; }
+.onglet { padding: var(--e2) var(--e4); border-radius: var(--rayon-petit); border: 1px solid var(--trait-fort); background: var(--surface); font-size: var(--t-appui); font-weight: 600; cursor: pointer; }
+.onglet--actif { background: var(--primaire); color: #fff; border-color: var(--primaire); }
+
+/* Grille simple */
+.grille-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e4); }
+@media (max-width: 640px) { .grille-2 { grid-template-columns: 1fr; } }
+
+/* Indicateurs du tableau de bord (espace CNTS) */
+.grille-indicateurs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--e4);
+}
+.indicateur { display: flex; flex-direction: column; gap: var(--e1); }
+.indicateur__valeur { font-size: var(--t-grand); font-weight: 700; line-height: 1.1; }
+.indicateur__valeur--seve { color: var(--seve); }
+.indicateur__valeur--ocre { color: var(--ocre); }
+.indicateur__valeur--sang { color: var(--sang); }
+
+/* Case à cocher étiquetée (choix des rôles) */
+.case {
+  display: inline-flex; align-items: center; gap: var(--e2);
+  min-height: var(--cible); padding: 0 var(--e3);
+  border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
+  background: var(--surface); font-size: var(--t-appui); font-weight: 500;
+  cursor: pointer;
+}
+.case:has(input:checked) { border-color: var(--primaire); background: var(--primaire-clair); color: var(--primaire); font-weight: 600; }
+.case input { width: 18px; height: 18px; accent-color: var(--primaire); cursor: pointer; }
+
+/* Réservé aux lecteurs d'écran */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

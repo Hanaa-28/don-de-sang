@@ -1,3 +1,560 @@
-/* Styles de base provisoires : le vrai design viendra des maquettes (S1-S2). */
+/* =====================================================================
+   Application des donneurs — système visuel
+   ---------------------------------------------------------------------
+   Repris de l'identité DJIGUI (couleurs, échelle d'espacement, bloc de
+   groupe sanguin), simplifié en CSS simple, sans dépendance.
+
+   Trois disciplines :
+   1. Espacement en base 4 : une marge vaut --e3 ou --e4, jamais 13 px.
+   2. Neuf tailles de texte, aucune hors échelle. Jamais moins de 16 px
+      dans un champ (sinon Safari zoome).
+   3. Une colonne de 440 px au plus : l'application se lit au téléphone.
+
+   Polices : celles du téléphone. Aucune police à télécharger, pour que
+   l'application s'ouvre vite sur une connexion lente.
+   ===================================================================== */
+
+:root {
+  /* Couleurs — charte « Doctolib » : bleu en primaire, rouge réservé au sang */
+  --primaire: #0165FF;         /* bleu Doctolib : action principale, marque  */
+  --primaire-fonce: #0053C7;   /* survol                                      */
+  --primaire-clair: #EBF3FF;   /* teinte claire (fonds, sélections)          */
+  --sang: #D92D20;             /* rouge sang : goutte, urgence, erreur       */
+  --sang-fonce: #B42318;
+  --sang-clair: #FEE4E2;
+  --encre: #1B2733;            /* texte                                       */
+  --encre-2: #64748B;          /* texte secondaire                            */
+  --seve: #0B8A5D;             /* réussite, « vous pouvez donner »            */
+  --seve-clair: #E7F5EF;
+  --ocre: #B45309;             /* attente, délai qui court                    */
+  --ocre-clair: #FDF0E3;
+  --trait: #E6E8EB;
+  --trait-fort: #CBD5E1;
+  --fond: #F6F7F9;
+  --surface: #FFFFFF;
+
+  /* Espacement, base 4 */
+  --e1: 4px;  --e2: 8px;  --e3: 12px; --e4: 16px; --e5: 20px;
+  --e6: 24px; --e7: 32px; --e8: 40px; --e9: 56px; --e10: 80px;
+
+  /* Typographie */
+  --t-micro: 12px; --t-petit: 13px; --t-appui: 14px; --t-corps: 16px; --t-lead: 18px;
+  --t-titre-s: 20px; --t-titre: 24px; --t-grand: 30px; --t-enorme: 44px;
+  --police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --police-chiffres: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  /* Gestes */
+  --cible: 44px;            /* zone tactile minimale */
+  --hauteur-action: 52px;
+  --largeur: 440px;
+  --hauteur-barre: 64px;
+  --duree: 180ms;
+  --courbe: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Formes et ombres (charte douce) */
+  --rayon: 12px;
+  --rayon-petit: 8px;
+  --ombre: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --ombre-forte: 0 6px 16px rgba(16, 24, 40, 0.08);
+}
+
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; }
+html { background: var(--fond); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--police);
+  font-size: var(--t-corps);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, p, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--primaire); outline-offset: 3px; }
+::selection { background: var(--primaire); color: #fff; }
+
+.chiffres { font-family: var(--police-chiffres); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.visuellement-cache {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* =====================================================================
+   1. Gabarits
+   ===================================================================== */
+.page {
+  max-width: var(--largeur);
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: calc(var(--e5) + env(safe-area-inset-top)) var(--e5)
+           calc(var(--hauteur-barre) + var(--e8) + env(safe-area-inset-bottom));
+}
+.page--sans-barre { padding-bottom: calc(var(--e8) + env(safe-area-inset-bottom)); }
+
+/* Écrans d'accès (D3 à D7) : une colonne centrée, un retour en haut. */
+.acces {
+  max-width: var(--largeur);
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: calc(var(--e5) + env(safe-area-inset-top)) var(--e5) var(--e8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e6);
+}
+.acces__corps { display: flex; flex-direction: column; gap: var(--e7); flex: 1; justify-content: center; }
+.acces__entete { display: flex; flex-direction: column; gap: var(--e2); }
+
+/* Piles et rangées : l'espace entre éléments ne se pose jamais à la main. */
+.pile   { display: flex; flex-direction: column; gap: var(--e4); }
+.pile-s { display: flex; flex-direction: column; gap: var(--e2); }
+.pile-l { display: flex; flex-direction: column; gap: var(--e6); }
+.rang   { display: flex; align-items: center; gap: var(--e3); }
+.rang-espace { display: flex; align-items: center; justify-content: space-between; gap: var(--e3); }
+.rang-flexible { display: flex; flex-wrap: wrap; gap: var(--e2); }
+.filet  { border: 0; border-top: 1px solid var(--trait); margin: 0; width: 100%; }
+
+/* =====================================================================
+   2. Texte
+   ===================================================================== */
+.titre-grand { font-size: var(--t-grand); font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+.titre       { font-size: var(--t-titre); font-weight: 650; line-height: 1.2; }
+.titre-s     { font-size: var(--t-titre-s); font-weight: 650; line-height: 1.25; }
+.lead        { font-size: var(--t-lead); font-weight: 600; line-height: 1.35; }
+.appui       { font-size: var(--t-appui); color: var(--encre-2); }
+.petit       { font-size: var(--t-petit); color: var(--encre-2); }
+.fort        { font-weight: 600; }
+.section-titre { font-size: var(--t-appui); font-weight: 600; color: var(--encre-2); }
+.centre      { text-align: center; }
+
+/* =====================================================================
+   3. Boutons — un seul bouton principal par écran
+   ===================================================================== */
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e2);
+  min-height: var(--hauteur-action);
+  padding: 0 var(--e6);
+  border: 1px solid transparent;
+  border-radius: var(--rayon-petit);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duree) var(--courbe), color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe), transform 120ms var(--courbe);
+}
+.bouton:active:not(:disabled) { transform: scale(0.98); }
+.bouton:disabled { opacity: 0.4; cursor: not-allowed; }
+.bouton--large { width: 100%; }
+.bouton--compact { min-height: var(--cible); padding: 0 var(--e4); font-size: var(--t-appui); }
+.bouton--principal { background: var(--primaire); color: #fff; box-shadow: var(--ombre); }
+.bouton--principal:hover:not(:disabled) { background: var(--primaire-fonce); }
+.bouton--secondaire { background: var(--surface); color: var(--encre); border-color: var(--trait-fort); }
+.bouton--secondaire:hover:not(:disabled) { border-color: var(--encre); }
+.bouton--danger { background: transparent; color: var(--sang); border-color: var(--sang); }
+.bouton--danger:hover:not(:disabled) { background: var(--sang); color: #fff; }
+
+.lien {
+  display: inline-flex; align-items: center; gap: var(--e2);
+  min-height: var(--cible);
+  padding: 0; border: 0; background: none;
+  color: var(--primaire); font-weight: 600; text-decoration: none; cursor: pointer;
+}
+.lien:hover { text-decoration: underline; text-underline-offset: 3px; }
+.lien--discret { color: var(--encre-2); font-weight: 500; }
+.retour { align-self: flex-start; color: var(--encre); }
+
+.tourne { animation: tourne 0.8s linear infinite; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+
+/* =====================================================================
+   4. Champs
+   ===================================================================== */
+.champ { display: flex; flex-direction: column; gap: var(--e1); }
+.champ__etiquette { font-size: var(--t-appui); font-weight: 600; }
+.champ__groupe {
+  display: flex; align-items: center; gap: var(--e2);
+  min-height: var(--hauteur-action);
+  padding: 0 var(--e3);
+  background: var(--surface);
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon-petit);
+  transition: border-color var(--duree);
+}
+.champ__groupe:focus-within { border-color: var(--encre); box-shadow: inset 0 0 0 1px var(--encre); }
+.champ__saisie {
+  flex: 1; min-width: 0;
+  height: calc(var(--hauteur-action) - 2px);
+  border: 0; outline: 0; background: transparent;
+  font: inherit; font-size: var(--t-corps); color: var(--encre);
+}
+.champ__saisie::placeholder { color: var(--encre-2); opacity: 0.6; }
+select.champ__saisie { appearance: none; cursor: pointer; }
+.champ__prefixe { color: var(--encre-2); font-family: var(--police-chiffres); font-size: var(--t-appui); }
+.champ__interne {
+  display: inline-flex; align-items: center; gap: var(--e1);
+  min-height: var(--cible); padding: 0 var(--e1);
+  border: 0; background: none; color: var(--encre-2); font-size: var(--t-petit); cursor: pointer;
+}
+.champ__aide { font-size: var(--t-petit); color: var(--encre-2); }
+.champ--erreur .champ__groupe { border-color: var(--sang); box-shadow: inset 0 0 0 1px var(--sang); }
+.champ--erreur .champ__aide-erreur { color: var(--sang); font-size: var(--t-petit); font-weight: 500; }
+.champ__coche { color: var(--seve); display: flex; }
+
+/* Date de naissance en trois cases */
+.date-cases { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: var(--e2); }
+
+/* Touche à bascule (sexe, canaux, motifs, créneaux) */
+.touche {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e2);
+  min-height: var(--cible); padding: var(--e2) var(--e4);
+  background: var(--surface); border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon-petit);
+  font-size: var(--t-appui); font-weight: 500; text-align: center; cursor: pointer;
+  transition: background var(--duree), border-color var(--duree), color var(--duree);
+}
+.touche:hover:not(:disabled) { border-color: var(--encre); }
+.touche[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); color: #fff; }
+.touche:disabled { opacity: 0.4; cursor: not-allowed; }
+.touches-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e2); }
+
+/* Choix du groupe sanguin */
+.grille-groupes { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--e2); }
+.touche-groupe {
+  height: 56px;
+  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
+  font-size: var(--t-lead); font-weight: 700; cursor: pointer;
+}
+.touche-groupe[aria-pressed="true"] { border: 2px solid var(--primaire); color: var(--primaire); background: var(--primaire-clair); }
+.touche-groupe:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.case { display: flex; align-items: flex-start; gap: var(--e3); cursor: pointer; font-size: var(--t-appui); }
+.case input { width: 22px; height: 22px; margin: 1px 0 0; flex-shrink: 0; accent-color: var(--primaire); }
+
+/* Code à six chiffres (D4, D7) */
+.code-cases { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--e2); }
+.code-case {
+  height: 60px; width: 100%;
+  text-align: center;
+  font-family: var(--police-chiffres); font-size: var(--t-titre); font-weight: 600;
+  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
+  color: var(--encre);
+}
+.code-case:focus { outline: none; border-color: var(--encre); box-shadow: inset 0 0 0 1px var(--encre); }
+.champ--erreur .code-case { border-color: var(--sang); }
+
+/* Force du mot de passe */
+.force { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--e1); }
+.force span { height: 4px; background: var(--trait); }
+.force span.rempli { background: var(--seve); }
+.force--faible span.rempli { background: var(--ocre); }
+
+/* =====================================================================
+   5. Messages et états — toujours une icône ET un mot
+   ===================================================================== */
+.message {
+  display: flex; align-items: flex-start; gap: var(--e2);
+  font-size: var(--t-appui); font-weight: 500;
+}
+.message svg { flex-shrink: 0; margin-top: 2px; }
+.message--erreur { color: var(--sang); }
+.message--reussite { color: var(--seve); }
+
+.encadre {
+  display: flex; align-items: flex-start; gap: var(--e3);
+  padding: var(--e4);
+  border-left: 3px solid var(--encre-2);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  font-size: var(--t-appui);
+}
+.encadre svg { flex-shrink: 0; margin-top: 2px; }
+.encadre--sang { border-left-color: var(--sang); background: var(--sang-clair); }
+.encadre--seve { border-left-color: var(--seve); background: var(--seve-clair); }
+.encadre--ocre { border-left-color: var(--ocre); background: var(--ocre-clair); }
+
+.etat { display: inline-flex; align-items: center; gap: var(--e2); font-weight: 600; font-size: var(--t-appui); }
+.etat svg { flex-shrink: 0; }
+.etat--seve { color: var(--seve); }
+.etat--ocre { color: var(--ocre); }
+.etat--sang { color: var(--sang); }
+.etat--neutre { color: var(--encre-2); font-weight: 500; }
+
+.etat-vide {
+  display: flex; flex-direction: column; align-items: center; gap: var(--e3);
+  padding: var(--e8) var(--e4);
+  text-align: center;
+}
+.etat-vide__icone {
+  width: 64px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--primaire-clair); color: var(--primaire); border-radius: 50%;
+}
+
+/* Chargement */
+.squelette { background: var(--trait); animation: respire 1.4s ease-in-out infinite; }
+@keyframes respire { 50% { opacity: 0.5; } }
+
+/* =====================================================================
+   6. Bloc de groupe sanguin — l'élément signature
+   Il ne change jamais de couleur : c'est la phrase qui porte l'état.
+   ===================================================================== */
+.bloc-groupe {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: var(--sang); color: #fff;
+  font-weight: 800; letter-spacing: -0.02em;
+}
+.bloc-groupe--l { width: 64px; height: 64px; font-size: var(--t-titre); }
+.bloc-groupe--m { width: 48px; height: 48px; font-size: var(--t-lead); }
+.bloc-groupe--s { width: 36px; height: 36px; font-size: var(--t-appui); }
+.bloc-groupe--inconnu { background: var(--trait); color: var(--encre-2); }
+
+/* =====================================================================
+   7. En-tête des écrans connectés et barre du bas
+   ===================================================================== */
+.entete { display: flex; align-items: center; justify-content: space-between; gap: var(--e3); min-height: var(--cible); }
+.entete__titre { font-size: var(--t-titre); font-weight: 700; line-height: 1.2; }
+.icone-bouton {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: var(--cible); height: var(--cible);
+  border: 0; background: none; color: var(--encre); cursor: pointer; text-decoration: none;
+  border-radius: 50%;
+}
+.icone-bouton:hover { background: rgba(36, 30, 29, 0.06); }
+.icone-bouton--clair { color: #fff; }
+.icone-bouton--clair:hover { background: rgba(255, 255, 255, 0.15); }
+.pastille-compte {
+  position: absolute; top: 6px; right: 4px;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 9px; border: 2px solid var(--fond);
+  background: var(--sang); color: #fff;
+  font-size: 11px; font-weight: 700; line-height: 14px; text-align: center;
+}
+
+.barre-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; justify-content: center;
+  background: var(--surface);
+  border-top: 1px solid var(--trait);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.barre-nav__interieur { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; max-width: var(--largeur); }
+.barre-nav a {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  height: var(--hauteur-barre);
+  color: var(--encre-2); font-size: 11px; font-weight: 500; text-decoration: none;
+}
+.barre-nav a[aria-current="page"] { color: var(--primaire); font-weight: 700; }
+.barre-nav a[aria-current="page"]::before {
+  content: ""; position: absolute; top: 0; left: 25%; right: 25%; height: 3px; background: var(--primaire);
+}
+.barre-nav__point {
+  position: absolute; top: 10px; left: calc(50% + 8px);
+  width: 8px; height: 8px; border-radius: 50%; background: var(--sang);
+}
+
+/* Indicateur d'étape (inscription) */
+.segments { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--e1); }
+.segments span { height: 4px; background: var(--trait); }
+.segments span.actif { background: var(--primaire); }
+
+/* =====================================================================
+   8. Listes
+   ===================================================================== */
+.liste { display: flex; flex-direction: column; border-top: 1px solid var(--trait); margin: 0; }
+.ligne {
+  display: flex; align-items: center; gap: var(--e3);
+  padding: var(--e4) 0;
+  border-bottom: 1px solid var(--trait);
+  text-decoration: none; color: inherit;
+}
+.ligne--bouton {
+  width: 100%; background: none; border: 0; border-bottom: 1px solid var(--trait);
+  text-align: left; font: inherit; color: inherit; cursor: pointer; align-items: flex-start;
+}
+.ligne__corps { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ligne--non-lue { position: relative; }
+.ligne--non-lue .ligne__titre { font-weight: 700; }
+.ligne__point { width: 8px; height: 8px; border-radius: 50%; background: var(--sang); flex-shrink: 0; }
+
+.bloc { background: var(--surface); border: 1px solid var(--trait); border-radius: var(--rayon); padding: var(--e5); box-shadow: var(--ombre); }
+.bloc--attenue { opacity: 0.65; }
+.bloc--a-repondre { border-left: 4px solid var(--sang); }
+
+/* =====================================================================
+   9. D1 Ouverture
+   ===================================================================== */
+.ouverture {
+  min-height: 100dvh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--e6);
+  background: var(--primaire); color: #fff;
+  padding: var(--e8) var(--e5);
+  text-align: center;
+  cursor: pointer;
+}
+.ouverture__goutte { width: 96px; height: 112px; animation: battement 1.3s ease-in-out infinite; }
+.ouverture__nom { font-size: var(--t-grand); font-weight: 800; letter-spacing: -0.01em; }
+.ouverture__devise { font-size: var(--t-corps); opacity: 0.85; max-width: 260px; }
+.ouverture__passer { position: absolute; bottom: calc(var(--e6) + env(safe-area-inset-bottom)); font-size: var(--t-petit); opacity: 0.7; }
+@keyframes battement {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.09); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.05); }
+}
+
+/* =====================================================================
+   10. D2 Bienvenue
+   ===================================================================== */
+.bienvenue { min-height: 100dvh; display: flex; flex-direction: column; }
+.bienvenue__haut {
+  background: var(--primaire); color: #fff;
+  padding: calc(var(--e8) + env(safe-area-inset-top)) var(--e5) var(--e9);
+  display: flex; justify-content: center;
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 0 100%);
+}
+.bienvenue__haut-interieur { width: 100%; max-width: var(--largeur); display: flex; flex-direction: column; gap: var(--e4); }
+.bienvenue__goutte { width: 56px; height: 66px; }
+.bienvenue__titre { font-size: var(--t-enorme); font-weight: 800; line-height: 1.02; letter-spacing: -0.02em; }
+.bienvenue__bas {
+  flex: 1; width: 100%; max-width: var(--largeur); margin: 0 auto;
+  padding: var(--e6) var(--e5) calc(var(--e8) + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: var(--e7);
+}
+.etapes { display: flex; flex-direction: column; gap: var(--e4); }
+.etapes li { display: grid; grid-template-columns: 32px 1fr; gap: var(--e3); align-items: start; }
+.etapes__numero {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--primaire); color: var(--primaire);
+  font-weight: 700; font-size: var(--t-appui); border-radius: 50%;
+}
+
+/* =====================================================================
+   11. D8 Carte de donneur
+   ===================================================================== */
+.carte-haut {
+  position: relative;
+  background: var(--primaire); color: #fff;
+  padding: calc(var(--e5) + env(safe-area-inset-top)) var(--e5) var(--e9);
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+}
+.carte-haut__interieur { max-width: var(--largeur); margin: 0 auto; display: flex; flex-direction: column; gap: var(--e1); }
+.carte-haut__libelle { font-size: var(--t-petit); opacity: 0.8; }
+.carte-haut__numero { font-family: var(--police-chiffres); font-size: var(--t-titre); font-weight: 600; letter-spacing: 0.04em; }
+.carte-haut__nom { font-size: var(--t-titre-s); font-weight: 700; margin-top: var(--e4); }
+.carte-haut__zone { font-size: var(--t-appui); opacity: 0.85; }
+.carte-haut__actions { position: absolute; top: calc(var(--e3) + env(safe-area-inset-top)); right: var(--e3); display: flex; }
+
+.carte-corps {
+  max-width: var(--largeur); margin: 0 auto;
+  padding: 0 var(--e5) calc(var(--hauteur-barre) + var(--e8) + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: var(--e6);
+}
+.goutte {
+  position: relative; align-self: center;
+  width: 150px; height: 175px;
+  margin-top: calc(-1 * var(--e8));
+}
+.goutte svg { width: 100%; height: 100%; filter: drop-shadow(0 10px 18px rgba(217, 45, 32, 0.22)); }
+.goutte--bat svg { animation: battement 2.6s ease-in-out infinite; transform-origin: 50% 60%; }
+.goutte__texte {
+  position: absolute; left: 0; right: 0; top: 52%;
+  transform: translateY(-50%);
+  color: #fff; text-align: center;
+  font-size: var(--t-enorme); font-weight: 800; letter-spacing: -0.03em;
+}
+.goutte--inconnue svg path { fill: var(--trait-fort); }
+
+.pilule {
+  display: inline-flex; align-items: center; gap: var(--e2); align-self: center;
+  padding: var(--e2) var(--e4);
+  border-radius: 999px;
+  font-weight: 700; font-size: var(--t-appui);
+}
+.pilule__point { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.pilule--seve { background: var(--seve-clair); color: var(--seve); }
+.pilule--ocre { background: var(--ocre-clair); color: var(--ocre); }
+.pilule--neutre { background: var(--trait); color: var(--encre-2); }
+
+.compte-a-rebours { display: flex; flex-direction: column; gap: var(--e2); }
+.compte-a-rebours__barre { height: 6px; background: var(--trait); overflow: hidden; }
+.compte-a-rebours__barre span { display: block; height: 100%; background: var(--ocre); }
+
+.faits { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--trait); border-radius: var(--rayon); background: var(--surface); box-shadow: var(--ombre); overflow: hidden; }
+.faits > div { padding: var(--e4); display: flex; flex-direction: column; gap: 2px; }
+.faits > div + div { border-left: 1px solid var(--trait); }
+.faits__valeur { font-size: var(--t-titre-s); font-weight: 700; }
+
+/* =====================================================================
+   12. D10 Réponse à une alerte
+   ===================================================================== */
+.bulle {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  padding: var(--e4) var(--e5);
+  border-radius: 0 14px 14px 14px;
+  display: flex; flex-direction: column; gap: var(--e2);
+}
+.bulle__auteur { font-size: var(--t-petit); font-weight: 700; color: var(--sang); }
+.bulle__heure { font-size: var(--t-micro); color: var(--encre-2); align-self: flex-end; }
+
+.reponses { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e2); }
+.reponses .bouton { padding: 0 var(--e3); white-space: nowrap; }
+
+/* =====================================================================
+   13. Bandeau hors connexion et invites
+   ===================================================================== */
+.bandeau-reseau {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center; gap: var(--e2);
+  padding: calc(var(--e2) + env(safe-area-inset-top)) var(--e4) var(--e2);
+  background: var(--encre); color: #fff;
+  font-size: var(--t-petit); font-weight: 500;
+}
+
+/* =====================================================================
+   14. Petits écrans (moins de 360 px) et préférences
+   ===================================================================== */
+@media (max-width: 359px) {
+  :root { --t-grand: 26px; --t-enorme: 36px; }
+  .page, .acces, .carte-corps { padding-left: var(--e4); padding-right: var(--e4); }
+  .grille-groupes { gap: var(--e1); }
+  .code-cases { gap: var(--e1); }
+  .code-case { height: 52px; font-size: var(--t-titre-s); }
+  .reponses { grid-template-columns: 1fr; }
+  .barre-nav a { font-size: 10px; }
+}
+@media (min-width: 720px) {
+  .barre-nav { border-top: 1px solid var(--trait); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* =====================================================================
+   15. Campagnes de collecte (pages publiques)
+   ===================================================================== */
+.zone-texte {
+  width: 100%; min-height: 96px; resize: vertical;
+  padding: var(--e3);
+  background: var(--surface); border: 1px solid var(--trait-fort); border-radius: var(--rayon-petit);
+  font: inherit; font-size: var(--t-corps); color: var(--encre);
+}
+.zone-texte:focus { outline: none; border-color: var(--encre); box-shadow: inset 0 0 0 1px var(--encre); }
+.formulaire-section { display: flex; flex-direction: column; gap: var(--e5); }
+.formulaire-section > h2 { font-size: var(--t-lead); font-weight: 700; }
+.reference {
+  font-family: var(--police-chiffres); font-size: var(--t-titre); font-weight: 700;
+  letter-spacing: 0.04em; color: var(--primaire);
+  padding: var(--e4); border: 1.5px dashed var(--primaire); background: var(--surface);
+  border-radius: var(--rayon); text-align: center;
+}
+.cases-liste { display: flex; flex-direction: column; gap: var(--e3); }
+/* Pages publiques affichées avec la barre du bas (donneur connecté). */
+.avec-barre .page--sans-barre { padding-bottom: calc(var(--hauteur-barre) + var(--e8) + env(safe-area-inset-bottom)); }

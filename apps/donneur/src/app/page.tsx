@@ -1,9 +1,37 @@
-// D1 — Écran d'ouverture (provisoire). Les écrans D1 à D14 seront construits à partir des maquettes.
+"use client";
+/**
+ * D1 · Ouverture.
+ * Un battement de cœur, puis l'application choisit la suite :
+ * donneur déjà connecté → sa carte (D8) ; sinon → bienvenue (D2).
+ * Un toucher passe l'écran : sur une connexion lente, on ne fait pas attendre.
+ */
+import { useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { GoutteSimple } from "@/components/Goutte";
+import { lireJeton } from "@/lib/session";
+
+const DUREE_MS = 1600;
+
 export default function Ouverture() {
+  const routeur = useRouter();
+
+  const continuer = useCallback(() => {
+    routeur.replace(lireJeton() ? "/carte" : "/bienvenue");
+  }, [routeur]);
+
+  useEffect(() => {
+    const minuterie = setTimeout(continuer, DUREE_MS);
+    return () => clearTimeout(minuterie);
+  }, [continuer]);
+
   return (
-    <main style={{ padding: "2rem", maxWidth: 480, margin: "0 auto" }}>
-      <h1>Don de sang</h1>
-      <p>Squelette de l’application des donneurs. Les écrans arrivent en semaine 3.</p>
+    <main className="ouverture" onClick={continuer}>
+      <GoutteSimple className="ouverture__goutte" />
+      <div className="pile-s" style={{ alignItems: "center" }}>
+        <p className="ouverture__nom">Don de sang</p>
+        <p className="ouverture__devise">Prévenu à temps, vous sauvez une vie.</p>
+      </div>
+      <span className="ouverture__passer">Toucher l’écran pour continuer</span>
     </main>
   );
 }

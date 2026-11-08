@@ -1,0 +1,8 @@
+{ "donnees": [
+  { "id": "z_01", "nom": "Tanghin", "ville": "Ouagadougou" },
+  { "id": "z_02", "nom": "Gounghin", "ville": "Ouagadougou" },
+  { "id": "z_03", "nom": "Dassasgho", "ville": "Ouagadougou" },
+  { "id": "z_04", "nom": "Cissin", "ville": "Ouagadougou" },
+  { "id": "z_05", "nom": "Kamsonghin", "ville": "Ouagadougou" },
+  { "id": "z_06", "nom": "Campus 2iE", "ville": "Ouagadougou" }
+] }

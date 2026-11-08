@@ -1,1 +1,5 @@
-{ "donnees": [ { "id": "c_01", "nom": "CNTS Ouagadougou", "adresse": "Avenue de l'Hôpital", "telephone": "+22625000000", "horaires": "Lun-Ven 7h30-15h30" } ] }
+{ "donnees": [
+  { "id": "c_01", "nom": "CNTS Ouagadougou", "type": "cnts", "adresse": "Avenue de l'Hôpital Yalgado", "ville": "Ouagadougou", "telephone": "+22625000000", "horaires": "Lundi au vendredi, 7h30 à 15h30" },
+  { "id": "c_02", "nom": "Site de collecte de Tanghin", "type": "site_collecte", "adresse": "Maison des jeunes de Tanghin", "ville": "Ouagadougou", "telephone": "+22625000010", "horaires": "Samedi, 8h à 13h" },
+  { "id": "c_03", "nom": "Site de collecte du Campus 2iE", "type": "site_collecte", "adresse": "Rue de la Science, Kamboinsé", "ville": "Ouagadougou", "telephone": "+22625000020", "horaires": "Premier mardi du mois, 9h à 14h" }
+] }

@@ -1,20 +1,9 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
 import { config } from "./config.js";
-import { routeSante } from "./routes/sante.js";
-import { gestionErreurs } from "./middlewares/erreurs.js";
+import { app } from "./app.js";
 
-const app = express();
-app.use(helmet());
-app.use(cors({ origin: config.corsOrigines }));
-app.use(express.json());
-
-app.use("/sante", routeSante);
-// À venir : /auth (S2), /donneurs (S3), /alertes (S4), /poches /labo (S5), /stock /distribution (S6), /tracabilite (S7)
-
-app.use(gestionErreurs);
-
+// Point d'entrée du développement local (et d'un éventuel hébergement
+// « serveur long ») : on écoute un port. En serverless (Vercel), c'est
+// `api/index.ts` qui exporte l'application, sans `app.listen`.
 app.listen(config.port, () => {
   console.log(`Backend démarré sur http://localhost:${config.port}`);
 });
