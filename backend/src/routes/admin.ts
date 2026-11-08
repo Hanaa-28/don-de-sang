@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import type {
   AgentCompte, CreerAgentRequete, CreerCentreRequete, CreerZoneRequete,
-  ModifierRegleRequete, Regle, Role, Statistiques,
+  ModifierRegleRequete, Regle, Role, SiteAdmin, Statistiques,
 } from "@dds/contrat-api";
 import { AppError } from "../lib/erreurs.js";
 import { requete, transaction } from "../lib/db.js";
@@ -137,6 +137,43 @@ routeAdmin.post("/zones", ...protege, async (req, res) => {
     [d.nom, d.ville],
   );
   res.status(201).json({ donnees: rows[0] });
+});
+
+// GET /sites — tous les sites du réseau (centres, dépôts, hôpitaux), avec
+// leur zone et le nombre d'agents rattachés. Sert notamment à alimenter le
+// choix du site à la création d'un compte agent.
+routeAdmin.get("/sites", ...protege, async (_req, res) => {
+  const { rows } = await requete<{
+    id: string; code: string; nom: string; type: string; adresse: string;
+    zone_id: string | null; zone_nom: string | null; ville: string | null;
+    telephone: string; horaires: string; actif: boolean; agents: number;
+  }>(
+    `select s.id, s.code, s.nom, s.type, s.adresse,
+            s.zone_id, z.nom as zone_nom, z.ville,
+            s.telephone, s.horaires, s.actif,
+            count(u.id)::int as agents
+     from sites s
+     left join zones z on z.id = s.zone_id
+     left join utilisateurs u on u.site_id = s.id and u.actif
+     group by s.id, z.nom, z.ville
+     order by s.type, s.nom`,
+  );
+
+  const sites: SiteAdmin[] = rows.map((s) => ({
+    id: s.id,
+    code: s.code,
+    nom: s.nom,
+    type: s.type as SiteAdmin["type"],
+    adresse: s.adresse,
+    zoneId: s.zone_id,
+    zoneNom: s.zone_nom,
+    ville: s.ville ?? "",
+    telephone: s.telephone,
+    horaires: s.horaires,
+    actif: s.actif,
+    agents: s.agents,
+  }));
+  res.json({ donnees: sites });
 });
 
 // POST /centres — ajouter un site (centre, dépôt ou hôpital).

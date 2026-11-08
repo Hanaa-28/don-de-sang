@@ -612,6 +612,26 @@ export interface CreerAgentRequete {
 /** POST /zones — ajouter une zone. */
 export interface CreerZoneRequete { nom: string; ville: string; }
 
+/**
+ * GET /sites — tous les sites vus par le CNTS (Annexe B : centre, dépôt,
+ * hôpital), actifs ou non. À ne pas confondre avec `GET /centres`, public,
+ * qui ne liste que les centres de collecte ouverts aux donneurs.
+ */
+export interface SiteAdmin {
+  id: string;
+  code: string;
+  nom: string;
+  type: "centre" | "depot" | "hopital";
+  adresse: string;
+  zoneId: string | null;
+  zoneNom: string | null;
+  ville: string;
+  telephone: string;
+  horaires: string;
+  actif: boolean;
+  agents: number;
+}
+
 /** POST /centres — ajouter un site (centre, dépôt ou hôpital). */
 export interface CreerCentreRequete {
   code: string;            // 3 lettres majuscules
